@@ -1,4 +1,4 @@
-package com.example.quizzical_pursuit;
+package com.example.quizzicalpursuit;
 
 public class Question {
 
