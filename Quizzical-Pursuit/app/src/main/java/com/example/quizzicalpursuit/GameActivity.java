@@ -166,11 +166,15 @@ public class GameActivity extends AppCompatActivity {
         TriviaSettings = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
         int questionAmount = TriviaSettings.getInt("questionAmount", 10);
         String questionDifficulty = TriviaSettings.getString("questionDifficulty", "easy");
+        // Retrieve the selected category ID, default to 9 if not found
+        int selectedCategoryId = TriviaSettings.getInt("selectedCategoryId", 9);
+        Log.d("category_id", String.valueOf(selectedCategoryId));
+
 
         Runnable fetchQuestionsTask = new Runnable() {
             @Override
             public void run() {
-                String apiUrl = "https://opentdb.com/api.php?amount=" + questionAmount + "&category=20&difficulty=" + questionDifficulty + "&type=multiple";
+                String apiUrl = "https://opentdb.com/api.php?amount=" + questionAmount + "&category=" + selectedCategoryId + "&difficulty=" + questionDifficulty + "&type=multiple";
 
                 Request request = new Request.Builder()
                         .url(apiUrl)
