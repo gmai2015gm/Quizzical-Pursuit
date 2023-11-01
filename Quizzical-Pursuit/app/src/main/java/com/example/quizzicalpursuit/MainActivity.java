@@ -1,6 +1,10 @@
 package com.example.quizzicalpursuit;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences TriviaSettings;
 
     Button btnGame;
-    ListView lstCategory;
+    RecyclerView lstCategory;
     ArrayList<Category> category;
 
     CategoryAdapter adapter;
@@ -48,12 +52,31 @@ public class MainActivity extends AppCompatActivity {
 
         lstCategory = findViewById(R.id.lstCategory);
         category = new ArrayList<>();
-        adapter  = new CategoryAdapter(category,this);
-        lstCategory.setAdapter(adapter);
         getData();
+        adapter  = new CategoryAdapter(this,category);
+        lstCategory.setAdapter(adapter);
 
+
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        lstCategory.setLayoutManager(manager);
+
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int pos = viewHolder.getAdapterPosition();
+                category.remove(pos);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        helper.attachToRecyclerView(lstCategory);
 
     }
+
     // Update this method
     public void getData(){
         String url = "https://opentdb.com/api_category.php";
