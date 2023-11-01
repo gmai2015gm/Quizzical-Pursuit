@@ -52,6 +52,11 @@ public class GameActivity extends AppCompatActivity {
         btnAnswer4 = findViewById(R.id.btnAnswer4);
         tvQuestion = findViewById(R.id.tvQuestion);
 
+        Bundle b = getIntent().getExtras();
+
+        //logs the current category under the CAT value
+        Log.d("HESH",b.getString("CAT")+"");
+
         Log.d("question", "test");
 
         // Create a list of questions by calling fetchQuestions on a background thread using ExecutorService.submit

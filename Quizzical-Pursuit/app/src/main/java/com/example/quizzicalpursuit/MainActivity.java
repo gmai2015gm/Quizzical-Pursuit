@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,19 +21,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     SharedPreferences TriviaSettings;
 
-    Button btnGame;
+    Button btnSettings;
     RecyclerView lstCategory;
     ArrayList<Category> category;
 
@@ -51,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(this); // Initialize the RequestQueue
 
         lstCategory = findViewById(R.id.lstCategory);
+        btnSettings = findViewById(R.id.btnSettings);
         category = new ArrayList<>();
         getData();
         adapter  = new CategoryAdapter(this,category);
@@ -59,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayoutManager manager = new LinearLayoutManager(this);
         lstCategory.setLayoutManager(manager);
+
+        btnSettings.setOnClickListener(e->{
+            Intent i = new Intent(this, SettingsActivity.class);
+            Bundle b = new Bundle();
+
+            i.putExtras(b);
+            startActivity(i);
+        });
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
             @Override
