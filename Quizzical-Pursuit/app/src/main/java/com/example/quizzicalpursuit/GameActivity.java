@@ -27,22 +27,42 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class GameActivity extends AppCompatActivity {
+    /**------Question variables------**/
+    int currentQuestionIndex = 0; //The index of the question we're on currently
+    List<Question> triviaQuestions; //The list of questions
 
+
+    /**------Our settings------**/
+    int numOfQuestions; //The number of questions in the game
+    int timeLimitPerQuestion; //The time in seconds that is given per question
+    boolean backgroundMusic; //does the user want backgroundMusic
+    boolean sfx; //Does the user want sound fx
+
+    /**------Metric Gathering Variables------**/
+    long startTime, endTime; //Used to calculate our time spent
+    ArrayList<Long> questionTimes; //A log of the amount of time spent per question -- timeSpent = endTime - startTime;
+    int correctAnswerCount = 0; //The number of correct answers
+
+    
     ExecutorService executorService;
-
     Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
     TextView tvQuestion;
     SharedPreferences TriviaSettings;
 
-    int currentQuestionIndex = 0;
-
-    List<Question> triviaQuestions;
+    /*
+    @TODO - Track correct answers
+    @TODO - Question Timer
+    @TODO - Move to summary page      
+     */
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        questionTimes = new ArrayList<>();
 
         executorService = Executors.newSingleThreadExecutor(); // Initialize ExecutorService
 
@@ -70,7 +90,13 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    private void populateButtonsWithQuestions(List<Question> questions, int questionNum) {
+    private void populateSettings()
+    {
+
+    }
+
+    private void populateButtonsWithQuestions(List<Question> questions, int questionNum)
+    {
         if (questions != null && !questions.isEmpty()) {
             Question question = questions.get(questionNum);
             String questionText = question.getQuestion();
@@ -163,9 +189,12 @@ public class GameActivity extends AppCompatActivity {
         OkHttpClient httpClient = new OkHttpClient();
         List<Question> questionList = new ArrayList<>();
 
+        //@TODO - Change this bit to the populateSettings Method
         TriviaSettings = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
         int questionAmount = TriviaSettings.getInt("questionAmount", 10);
         String questionDifficulty = TriviaSettings.getString("questionDifficulty", "easy");
+
+
         // Retrieve the selected category ID, default to 9 if not found
         int selectedCategoryId = TriviaSettings.getInt("selectedCategoryId", 9);
         Log.d("category_id", String.valueOf(selectedCategoryId));
