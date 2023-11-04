@@ -49,7 +49,7 @@ public class GameActivity extends AppCompatActivity {
 
 
     ExecutorService executorService;
-    Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
+    Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4, btnQuit;
     TextView tvQuestion;
     SharedPreferences triviaSettings;
     Intent intent;
@@ -79,6 +79,7 @@ public class GameActivity extends AppCompatActivity {
         btnAnswer2 = findViewById(R.id.btnAnswer2);
         btnAnswer3 = findViewById(R.id.btnAnswer3);
         btnAnswer4 = findViewById(R.id.btnAnswer4);
+        btnQuit = findViewById(R.id.btnQuit);
         tvQuestion = findViewById(R.id.tvQuestion);
 
         resetBtnColor();
@@ -100,6 +101,10 @@ public class GameActivity extends AppCompatActivity {
                 Toast.makeText(this, "Unable to get questions. Please try again.", Toast.LENGTH_SHORT).show();
                 this.finish();
             }
+        });
+
+        btnQuit.setOnClickListener((view)->{
+            this.finish();
         });
     }
 
