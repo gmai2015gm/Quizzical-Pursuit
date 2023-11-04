@@ -3,7 +3,9 @@ package com.example.quizzicalpursuit;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.opengl.Visibility;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,20 +40,22 @@ public class GameActivity extends AppCompatActivity {
     int timeLimitPerQuestion; //The time in seconds that is given per question
     boolean backgroundMusic; //does the user want backgroundMusic
     boolean sfx; //Does the user want sound fx
+    int catagoryID;
 
     /**------Metric Gathering Variables------**/
     long startTime, endTime; //Used to calculate our time spent
     ArrayList<Long> questionTimes; //A log of the amount of time spent per question -- timeSpent = endTime - startTime;
     int correctAnswerCount = 0; //The number of correct answers
 
-    
+
     ExecutorService executorService;
     Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4;
     TextView tvQuestion;
-    SharedPreferences TriviaSettings;
+    SharedPreferences triviaSettings;
+    Intent intent;
 
     /*
-    @TODO - Track correct answers
+    DONE! TODO - Track correct answers
     @TODO - Question Timer
     @TODO - Move to summary page      
      */
@@ -61,8 +66,12 @@ public class GameActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        triviaSettings = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
 
         questionTimes = new ArrayList<>();
+        intent = getIntent();
+
+        populateSettings();
 
         executorService = Executors.newSingleThreadExecutor(); // Initialize ExecutorService
 
@@ -71,6 +80,8 @@ public class GameActivity extends AppCompatActivity {
         btnAnswer3 = findViewById(R.id.btnAnswer3);
         btnAnswer4 = findViewById(R.id.btnAnswer4);
         tvQuestion = findViewById(R.id.tvQuestion);
+
+        resetBtnColor();
 
         Log.d("question", "test");
 
@@ -86,18 +97,36 @@ public class GameActivity extends AppCompatActivity {
                 Log.d("question", "test3");
             } else {
                 // Handle the case where no questions are available
+                Toast.makeText(this, "Unable to get questions. Please try again.", Toast.LENGTH_SHORT).show();
+                this.finish();
             }
         });
     }
 
     private void populateSettings()
     {
+        //Grab our settings from the sharedPrefs
+        numOfQuestions = triviaSettings.getInt("numQuestions", 10);
+        timeLimitPerQuestion = triviaSettings.getInt("timePerQuestion", 30);
 
+        String sounds = triviaSettings.getString("sounds", "music, sfx");
+        backgroundMusic = sounds.toLowerCase().contains("music");
+        sfx = sounds.toLowerCase().contains("sfx");
+
+        //Grab our category from the intent
+//        Bundle bundle = intent.getBundleExtra("");
+//        catagoryID = bundle.getInt("CAT");
+
+        //@TODO - TAKE THIS OUT WHEN DONE DEBUGGING
+        catagoryID = 9;
+
+//        String questionDifficulty = triviaSettings.getString("questionDifficulty", "easy");
     }
 
     private void populateButtonsWithQuestions(List<Question> questions, int questionNum)
     {
         if (questions != null && !questions.isEmpty()) {
+
             Question question = questions.get(questionNum);
             String questionText = question.getQuestion();
             String correctAnswer = question.getCorrectAnswer();
@@ -133,77 +162,184 @@ public class GameActivity extends AppCompatActivity {
             btnAnswer4.setOnClickListener(e -> {
                 checkAnswer(btnAnswer4.getText().toString(), correctAnswer);
             });
+
+            //start our timer
+            startTime = System.currentTimeMillis();
         }
     }
 
-    private void checkAnswer(String selectedAnswer, String correctAnswer) {
-        if (selectedAnswer.equals(correctAnswer)) {
-            tvQuestion.setText("You got the correct answer");
-            btnAnswer1.setEnabled(false);
-            btnAnswer2.setEnabled(false);
-            btnAnswer3.setEnabled(false);
-            btnAnswer4.setEnabled(false);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    currentQuestionIndex++;
-                    btnAnswer1.setEnabled(true);
-                    btnAnswer2.setEnabled(true);
-                    btnAnswer3.setEnabled(true);
-                    btnAnswer4.setEnabled(true);
-                    if (currentQuestionIndex < triviaQuestions.size()) {
-                        populateButtonsWithQuestions(triviaQuestions, currentQuestionIndex);
-                    } else {
-                        tvQuestion.setText("You have completed the quiz!");
-                        currentQuestionIndex = 0;
-                    }
-                }
-            }, 5000); // 5000 milliseconds (5 seconds) delay
+    private void showRightAnswer(String correctAnswer)
+    {
+        ArrayList<Button> btns = new ArrayList<>();
 
-        } else {
-            tvQuestion.setText("You got the incorrect answer");
-            btnAnswer1.setEnabled(false);
-            btnAnswer2.setEnabled(false);
-            btnAnswer3.setEnabled(false);
-            btnAnswer4.setEnabled(false);
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    currentQuestionIndex++;
-                    btnAnswer1.setEnabled(true);
-                    btnAnswer2.setEnabled(true);
-                    btnAnswer3.setEnabled(true);
-                    btnAnswer4.setEnabled(true);
-                    if (currentQuestionIndex < triviaQuestions.size()) {
-                        populateButtonsWithQuestions(triviaQuestions, currentQuestionIndex);
-                    } else {
-                        tvQuestion.setText("You have completed the quiz!");
-                        currentQuestionIndex = 0;
-                    }
-                }
-            }, 5000); // 5000 milliseconds (5 seconds) delay
+        btns.add(btnAnswer1);
+        btns.add(btnAnswer2);
+        btns.add(btnAnswer3);
+        btns.add(btnAnswer4);
+
+        for (Button btn : btns)
+        {
+            if (btn.getText().toString().equals(correctAnswer))
+            {
+                btn.setBackgroundColor(Color.GREEN);
+                btn.setTextColor(Color.BLACK);
+            }
+
+            else
+            {
+                btn.setBackgroundColor(Color.RED);
+                btn.setTextColor(Color.WHITE);
+            }
+
         }
+    }
+
+    private void resetBtnColor()
+    {
+        btnAnswer1.setBackgroundColor(Color.parseColor("#7503A9F4"));
+        btnAnswer2.setBackgroundColor(Color.parseColor("#7503A9F4"));
+        btnAnswer3.setBackgroundColor(Color.parseColor("#7503A9F4"));
+        btnAnswer4.setBackgroundColor(Color.parseColor("#7503A9F4"));
+
+        btnAnswer1.setTextColor(Color.BLACK);
+        btnAnswer2.setTextColor(Color.BLACK);
+        btnAnswer3.setTextColor(Color.BLACK);
+        btnAnswer4.setTextColor(Color.BLACK);
+    }
+
+    private void endOfGame()
+    {
+        String TAG = "EndOfGame";
+
+        Log.d(TAG, "Correct Answers: " + correctAnswerCount);
+        Log.d(TAG, "Incorrect Answers; " + (numOfQuestions - correctAnswerCount));
+
+        long milliTotal = 0;
+
+        for (long time :
+                questionTimes) {
+            Log.d(TAG, "Q-Time: " + time);
+            milliTotal += time;
+        }
+
+        long avgMilliTime = milliTotal / questionTimes.size();
+        int avgSecTime = (int) (milliTotal / 1000);
+
+        Log.d(TAG, "Average Time: " + avgSecTime);
+    }
+
+    private void checkAnswer(String selectedAnswer, String correctAnswer) {
+        if (selectedAnswer.equals(correctAnswer))
+        {
+            tvQuestion.setText("You got the correct answer");
+            correctAnswerCount++;
+        }
+        else
+            tvQuestion.setText("You got the incorrect answer");
+
+        showRightAnswer(correctAnswer);
+
+        //Add the time to our log
+        endTime = System.currentTimeMillis();
+        questionTimes.add(endTime - startTime);
+
+        //Disable the buttons
+        btnAnswer1.setEnabled(false);
+        btnAnswer2.setEnabled(false);
+        btnAnswer3.setEnabled(false);
+        btnAnswer4.setEnabled(false);
+
+        //Move to the next questions
+        new Handler().postDelayed(() ->
+        {
+            currentQuestionIndex++;
+
+            resetBtnColor();
+            btnAnswer1.setEnabled(true);
+            btnAnswer2.setEnabled(true);
+            btnAnswer3.setEnabled(true);
+            btnAnswer4.setEnabled(true);
+
+            //Figure out if we're at the end of the game
+            if (currentQuestionIndex < triviaQuestions.size())
+            {
+                populateButtonsWithQuestions(triviaQuestions, currentQuestionIndex);
+            }
+            else
+            {
+                tvQuestion.setText("You have completed the quiz!");
+                currentQuestionIndex = 0;
+                endOfGame();
+            }
+        }, 5000); // 5000 milliseconds (5 seconds) delay
+
+
+
+//        if (selectedAnswer.equals(correctAnswer)) {
+//            tvQuestion.setText("You got the correct answer");
+//            btnAnswer1.setEnabled(false);
+//            btnAnswer2.setEnabled(false);
+//            btnAnswer3.setEnabled(false);
+//            btnAnswer4.setEnabled(false);
+//
+//            correctAnswerCount++;
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    currentQuestionIndex++;
+//                    btnAnswer1.setEnabled(true);
+//                    btnAnswer2.setEnabled(true);
+//                    btnAnswer3.setEnabled(true);
+//                    btnAnswer4.setEnabled(true);
+//                    if (currentQuestionIndex < triviaQuestions.size()) {
+//                        populateButtonsWithQuestions(triviaQuestions, currentQuestionIndex);
+//                    } else {
+//                        tvQuestion.setText("You have completed the quiz!");
+//                        currentQuestionIndex = 0;
+//                    }
+//                }
+//            }, 5000); // 5000 milliseconds (5 seconds) delay
+//
+//        } else {
+//            tvQuestion.setText("You got the incorrect answer");
+//            btnAnswer1.setEnabled(false);
+//            btnAnswer2.setEnabled(false);
+//            btnAnswer3.setEnabled(false);
+//            btnAnswer4.setEnabled(false);
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    currentQuestionIndex++;
+//                    btnAnswer1.setEnabled(true);
+//                    btnAnswer2.setEnabled(true);
+//                    btnAnswer3.setEnabled(true);
+//                    btnAnswer4.setEnabled(true);
+//                    if (currentQuestionIndex < triviaQuestions.size()) {
+//                        populateButtonsWithQuestions(triviaQuestions, currentQuestionIndex);
+//                    } else {
+//                        tvQuestion.setText("You have completed the quiz!");
+//                        currentQuestionIndex = 0;
+//                    }
+//                }
+//            }, 5000); // 5000 milliseconds (5 seconds) delay
+//        }
     }
 
     public List<Question> fetchQuestions() {
         OkHttpClient httpClient = new OkHttpClient();
         List<Question> questionList = new ArrayList<>();
 
-        //@TODO - Change this bit to the populateSettings Method
-        TriviaSettings = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-        int questionAmount = TriviaSettings.getInt("questionAmount", 10);
-        String questionDifficulty = TriviaSettings.getString("questionDifficulty", "easy");
-
 
         // Retrieve the selected category ID, default to 9 if not found
-        int selectedCategoryId = TriviaSettings.getInt("selectedCategoryId", 9);
-        Log.d("category_id", String.valueOf(selectedCategoryId));
+//        int selectedCategoryId = triviaSettings.getInt("selectedCategoryId", 9);
+//        Log.d("category_id", String.valueOf(selectedCategoryId));
 
 
         Runnable fetchQuestionsTask = new Runnable() {
             @Override
             public void run() {
-                String apiUrl = "https://opentdb.com/api.php?amount=" + questionAmount + "&category=" + selectedCategoryId + "&difficulty=" + questionDifficulty + "&type=multiple";
+//                String apiUrl = "https://opentdb.com/api.php?amount=" + questionAmount + "&category=" + selectedCategoryId + "&difficulty=" + questionDifficulty + "&type=multiple";
+                String apiUrl = "https://opentdb.com/api.php?amount=" + numOfQuestions + "&category=" + catagoryID + "&type=multiple";
 
                 Request request = new Request.Builder()
                         .url(apiUrl)
