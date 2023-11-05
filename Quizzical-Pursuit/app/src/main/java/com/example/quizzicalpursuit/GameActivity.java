@@ -1,29 +1,31 @@
 package com.example.quizzicalpursuit;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.opengl.Visibility;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -51,12 +53,14 @@ public class GameActivity extends AppCompatActivity {
     ExecutorService executorService;
     Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4, btnQuit;
     TextView tvQuestion;
+    ProgressBar pbarCountdown;
     SharedPreferences triviaSettings;
     Intent intent;
+    CountDownTimer timer;
 
     /*
     DONE! TODO - Track correct answers
-    @TODO - Question Timer
+    DONE! TODO - Question Timer
     @TODO - Move to summary page      
      */
 
@@ -81,6 +85,7 @@ public class GameActivity extends AppCompatActivity {
         btnAnswer4 = findViewById(R.id.btnAnswer4);
         btnQuit = findViewById(R.id.btnQuit);
         tvQuestion = findViewById(R.id.tvQuestion);
+        pbarCountdown = findViewById(R.id.pBarCountdown);
 
         resetBtnColor();
 
@@ -92,17 +97,21 @@ public class GameActivity extends AppCompatActivity {
             List<Question> triviaQuestions = fetchQuestions();
             Log.d("question", triviaQuestions.toString());
 
-            if (triviaQuestions != null && !triviaQuestions.isEmpty()) {
+            if (triviaQuestions != null && !triviaQuestions.isEmpty())
+            {
                 // Populate buttons with questions and answers
                 populateButtonsWithQuestions(triviaQuestions, 0);
                 Log.d("question", "test3");
-            } else {
+            }
+            else
+            {
                 // Handle the case where no questions are available
                 Toast.makeText(this, "Unable to get questions. Please try again.", Toast.LENGTH_SHORT).show();
                 this.finish();
             }
         });
 
+        //If the user clicks this, they want to leave, so we go back.
         btnQuit.setOnClickListener((view)->{
             this.finish();
         });
@@ -130,7 +139,8 @@ public class GameActivity extends AppCompatActivity {
 
     private void populateButtonsWithQuestions(List<Question> questions, int questionNum)
     {
-        if (questions != null && !questions.isEmpty()) {
+        if (questions != null && !questions.isEmpty())
+        {
 
             Question question = questions.get(questionNum);
             String questionText = question.getQuestion();
@@ -153,23 +163,41 @@ public class GameActivity extends AppCompatActivity {
             btnAnswer4.setText(answerOptions.get(3));
 
             btnAnswer1.setOnClickListener(e -> {
-                checkAnswer(btnAnswer1.getText().toString(), correctAnswer);
+                checkAnswer(btnAnswer1.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer2.setOnClickListener(e -> {
-                checkAnswer(btnAnswer2.getText().toString(), correctAnswer);
+                checkAnswer(btnAnswer2.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer3.setOnClickListener(e -> {
-                checkAnswer(btnAnswer3.getText().toString(), correctAnswer);
+                checkAnswer(btnAnswer3.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer4.setOnClickListener(e -> {
-                checkAnswer(btnAnswer4.getText().toString(), correctAnswer);
+                checkAnswer(btnAnswer4.getText().toString(), correctAnswer, false);
             });
 
-            //start our timer
+            //start our Stopwatch
             startTime = System.currentTimeMillis();
+
+            //Start our countdown
+            pbarCountdown.setProgress(0);
+            pbarCountdown.setMax(timeLimitPerQuestion);
+            timer = new CountDownTimer(timeLimitPerQuestion * 1000, 1000)
+            {
+                @Override
+                public void onTick(long l)
+                {
+                    pbarCountdown.setProgress(pbarCountdown.getProgress() + 1);
+                }
+
+                @Override
+                public void onFinish()
+                {
+                    checkAnswer("", correctAnswer, true);
+                }
+            }.start();
         }
     }
 
@@ -233,14 +261,18 @@ public class GameActivity extends AppCompatActivity {
         Log.d(TAG, "Average Time: " + avgSecTime);
     }
 
-    private void checkAnswer(String selectedAnswer, String correctAnswer) {
+    private void checkAnswer(String selectedAnswer, String correctAnswer, boolean timeout) {
         if (selectedAnswer.equals(correctAnswer))
         {
             tvQuestion.setText("You got the correct answer");
             correctAnswerCount++;
         }
+        else if (timeout)
+            tvQuestion.setText("You ran out of time");
         else
             tvQuestion.setText("You got the incorrect answer");
+
+        timer.cancel();
 
         showRightAnswer(correctAnswer);
 
