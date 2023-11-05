@@ -28,6 +28,9 @@ public class HistoryActivity extends AppCompatActivity {
         txtTotalIncorrect = findViewById(R.id.txtTotalIncorrect);
         txtAvgTime = findViewById(R.id.txtAvgTime);
 
+        btnCategories = findViewById(R.id.btnCategories);
+        btnSettings = findViewById(R.id.btnSettings);
+
         //\\ ---<<< TEXTVIEW POPULATION >>>--- //\\
 
         // Get game results from intent
@@ -35,11 +38,11 @@ public class HistoryActivity extends AppCompatActivity {
 
         // Populate TextViews from intent
 
-//        txtCategory.setText(i.getStringExtra("category"));
-//        txtScore.setText(i.getStringExtra("score"));
-//        txtTotalCorrect.setText(i.getStringExtra("correct"));
-//        txtTotalIncorrect.setText(i.getStringExtra("incorrect"));
-//        txtAvgTime.setText(i.getStringExtra("time"));
+        txtCategory.setText(i.getStringExtra("category"));
+        txtScore.setText(i.getStringExtra("score"));
+        txtTotalCorrect.setText(i.getStringExtra("correct"));
+        txtTotalIncorrect.setText(i.getStringExtra("incorrect"));
+        txtAvgTime.setText(i.getStringExtra("time"));
 
 
 

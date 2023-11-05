@@ -42,7 +42,8 @@ public class GameActivity extends AppCompatActivity {
     int timeLimitPerQuestion; //The time in seconds that is given per question
     boolean backgroundMusic; //does the user want backgroundMusic
     boolean sfx; //Does the user want sound fx
-    int catagoryID;
+    int categoryID;
+    String categoryName;
 
     /**------Metric Gathering Variables------**/
     long startTime, endTime; //Used to calculate our time spent
@@ -57,13 +58,6 @@ public class GameActivity extends AppCompatActivity {
     SharedPreferences triviaSettings;
     Intent intent;
     CountDownTimer timer;
-
-    /*
-    DONE! TODO - Track correct answers
-    DONE! TODO - Question Timer
-    @TODO - Move to summary page      
-     */
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -128,13 +122,9 @@ public class GameActivity extends AppCompatActivity {
         sfx = sounds.toLowerCase().contains("sfx");
 
         //Grab our category from the intent
-//        Bundle bundle = intent.getBundleExtra("");
-//        catagoryID = bundle.getInt("CAT");
-
-        //@TODO - TAKE THIS OUT WHEN DONE DEBUGGING
-        catagoryID = 9;
-
-//        String questionDifficulty = triviaSettings.getString("questionDifficulty", "easy");
+        Bundle bundle = intent.getBundleExtra("");
+        categoryName = bundle.getString("CAT");
+        categoryID = bundle.getInt("CATID");
     }
 
     private void populateButtonsWithQuestions(List<Question> questions, int questionNum)
@@ -212,12 +202,12 @@ public class GameActivity extends AppCompatActivity {
 
         for (Button btn : btns)
         {
+            //If it's the right answer, turn it green; if not, turn it red.
             if (btn.getText().toString().equals(correctAnswer))
             {
                 btn.setBackgroundColor(Color.GREEN);
                 btn.setTextColor(Color.BLACK);
             }
-
             else
             {
                 btn.setBackgroundColor(Color.RED);
@@ -244,24 +234,39 @@ public class GameActivity extends AppCompatActivity {
     {
         String TAG = "EndOfGame";
 
+        //Log our end of game metrics
         Log.d(TAG, "Correct Answers: " + correctAnswerCount);
         Log.d(TAG, "Incorrect Answers; " + (numOfQuestions - correctAnswerCount));
 
+        //Calculate our average answer time
         long milliTotal = 0;
 
-        for (long time :
-                questionTimes) {
+        for (long time : questionTimes)
+        {
             Log.d(TAG, "Q-Time: " + time);
             milliTotal += time;
         }
 
         long avgMilliTime = milliTotal / questionTimes.size();
-        int avgSecTime = (int) (milliTotal / 1000);
+        int avgSecTime = (int) (avgMilliTime / 1000);
 
         Log.d(TAG, "Average Time: " + avgSecTime);
+
+        //Prepare the intent to move to the next view
+        Intent toSummary = new Intent(this, HistoryActivity.class);
+
+        toSummary.putExtra("category", categoryName);
+        toSummary.putExtra("score", (int)((correctAnswerCount / (numOfQuestions + 0.0)) * 100) + "%");
+        toSummary.putExtra("correct", correctAnswerCount+"");
+        toSummary.putExtra("incorrect", (numOfQuestions - correctAnswerCount)+"");
+        toSummary.putExtra("time", avgSecTime+" sec");
+
+        startActivity(toSummary);
+        this.finish();
     }
 
-    private void checkAnswer(String selectedAnswer, String correctAnswer, boolean timeout) {
+    private void checkAnswer(String selectedAnswer, String correctAnswer, boolean timeout)
+    {
         if (selectedAnswer.equals(correctAnswer))
         {
             tvQuestion.setText("You got the correct answer");
@@ -308,75 +313,19 @@ public class GameActivity extends AppCompatActivity {
                 currentQuestionIndex = 0;
                 endOfGame();
             }
-        }, 5000); // 5000 milliseconds (5 seconds) delay
+        }, 3000); // 5000 milliseconds (5 seconds) delay
 
-
-
-//        if (selectedAnswer.equals(correctAnswer)) {
-//            tvQuestion.setText("You got the correct answer");
-//            btnAnswer1.setEnabled(false);
-//            btnAnswer2.setEnabled(false);
-//            btnAnswer3.setEnabled(false);
-//            btnAnswer4.setEnabled(false);
-//
-//            correctAnswerCount++;
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    currentQuestionIndex++;
-//                    btnAnswer1.setEnabled(true);
-//                    btnAnswer2.setEnabled(true);
-//                    btnAnswer3.setEnabled(true);
-//                    btnAnswer4.setEnabled(true);
-//                    if (currentQuestionIndex < triviaQuestions.size()) {
-//                        populateButtonsWithQuestions(triviaQuestions, currentQuestionIndex);
-//                    } else {
-//                        tvQuestion.setText("You have completed the quiz!");
-//                        currentQuestionIndex = 0;
-//                    }
-//                }
-//            }, 5000); // 5000 milliseconds (5 seconds) delay
-//
-//        } else {
-//            tvQuestion.setText("You got the incorrect answer");
-//            btnAnswer1.setEnabled(false);
-//            btnAnswer2.setEnabled(false);
-//            btnAnswer3.setEnabled(false);
-//            btnAnswer4.setEnabled(false);
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    currentQuestionIndex++;
-//                    btnAnswer1.setEnabled(true);
-//                    btnAnswer2.setEnabled(true);
-//                    btnAnswer3.setEnabled(true);
-//                    btnAnswer4.setEnabled(true);
-//                    if (currentQuestionIndex < triviaQuestions.size()) {
-//                        populateButtonsWithQuestions(triviaQuestions, currentQuestionIndex);
-//                    } else {
-//                        tvQuestion.setText("You have completed the quiz!");
-//                        currentQuestionIndex = 0;
-//                    }
-//                }
-//            }, 5000); // 5000 milliseconds (5 seconds) delay
-//        }
     }
 
     public List<Question> fetchQuestions() {
         OkHttpClient httpClient = new OkHttpClient();
         List<Question> questionList = new ArrayList<>();
 
-
-        // Retrieve the selected category ID, default to 9 if not found
-//        int selectedCategoryId = triviaSettings.getInt("selectedCategoryId", 9);
-//        Log.d("category_id", String.valueOf(selectedCategoryId));
-
-
         Runnable fetchQuestionsTask = new Runnable() {
             @Override
             public void run() {
 //                String apiUrl = "https://opentdb.com/api.php?amount=" + questionAmount + "&category=" + selectedCategoryId + "&difficulty=" + questionDifficulty + "&type=multiple";
-                String apiUrl = "https://opentdb.com/api.php?amount=" + numOfQuestions + "&category=" + catagoryID + "&type=multiple";
+                String apiUrl = "https://opentdb.com/api.php?amount=" + numOfQuestions + "&category=" + categoryID + "&type=multiple";
 
                 Request request = new Request.Builder()
                         .url(apiUrl)
