@@ -63,6 +63,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 Bundle b = new Bundle();
 
                 b.putString("CAT",""+txtName.getText());
+                //b.putInt("CATID", category.get(2).getId());
                 i.putExtras(b);
                 startActivity(view.getContext(),i,b);
             });

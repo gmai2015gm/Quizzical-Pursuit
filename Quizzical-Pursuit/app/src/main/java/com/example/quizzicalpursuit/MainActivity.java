@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         btnSettings.setOnClickListener(e->{
             Intent i = new Intent(this, SettingsActivity.class);
             Bundle b = new Bundle();
-
             i.putExtras(b);
             startActivity(i);
         });
