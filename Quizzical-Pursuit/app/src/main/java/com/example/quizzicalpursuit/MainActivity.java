@@ -1,13 +1,16 @@
 package com.example.quizzicalpursuit;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
-import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -18,20 +21,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import okhttp3.Call;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     SharedPreferences TriviaSettings;
 
-    Button btnGame;
-    ListView lstCategory;
+    Button btnSettings;
+    RecyclerView lstCategory;
     ArrayList<Category> category;
 
     CategoryAdapter adapter;
@@ -47,13 +44,40 @@ public class MainActivity extends AppCompatActivity {
         queue = Volley.newRequestQueue(this); // Initialize the RequestQueue
 
         lstCategory = findViewById(R.id.lstCategory);
+        btnSettings = findViewById(R.id.btnSettings);
         category = new ArrayList<>();
-        adapter  = new CategoryAdapter(category,this);
-        lstCategory.setAdapter(adapter);
         getData();
+        adapter  = new CategoryAdapter(this,category);
+        lstCategory.setAdapter(adapter);
 
+
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        lstCategory.setLayoutManager(manager);
+
+        btnSettings.setOnClickListener(e->{
+            Intent i = new Intent(this, SettingsActivity.class);
+            Bundle b = new Bundle();
+            i.putExtras(b);
+            startActivity(i);
+        });
+
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int pos = viewHolder.getAdapterPosition();
+                category.remove(pos);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        helper.attachToRecyclerView(lstCategory);
 
     }
+
     // Update this method
     public void getData(){
         String url = "https://opentdb.com/api_category.php";

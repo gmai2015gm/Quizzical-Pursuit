@@ -14,6 +14,7 @@
         android:layout_height="50dp"
         android:background="#7503A9F4"
         android:gravity="center"
+        android:fontFamily="casual"
         android:text="Settings"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,7 +26,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
+        android:fontFamily="casual"
         android:text="Number of Questions"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/sbNumQuest"
@@ -38,7 +40,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="casual"
         android:text="Time per Question (Sec)"
         android:textSize="20sp"
         app:layout_constraintEnd_toStartOf="@+id/sbTimePerQuest"
@@ -73,66 +76,25 @@
         app:layout_constraintTop_toTopOf="@+id/textView7" />
 
     <TextView
-        android:id="@+id/textView8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="Question Type:"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTimePerQuest" />
-
-    <androidx.gridlayout.widget.GridLayout
-        android:id="@+id/gridLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:columnCount="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8"
-        app:rowCount="2">
-
-        <CheckBox
-            android:id="@+id/cbMC"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="checkActions"
-            android:text="Multiple Choice"
-            android:textSize="16sp"
-            app:layout_column="0"
-            app:layout_row="0" />
-
-        <CheckBox
-            android:id="@+id/cbTF"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="checkActions"
-            android:text="True or False"
-            android:textSize="16sp"
-            app:layout_column="0"
-            app:layout_row="1" />
-    </androidx.gridlayout.widget.GridLayout>
-
-    <TextView
         android:id="@+id/textView10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
+        android:fontFamily="casual"
         android:text="Background Music"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gridLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
     <TextView
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:text="SFX"
+        android:fontFamily="casual"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView10" />
@@ -142,6 +104,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:fontFamily="casual"
         android:text="ON"
         app:layout_constraintBottom_toBottomOf="@+id/textView10"
         app:layout_constraintStart_toEndOf="@+id/textView10"
@@ -152,6 +115,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:fontFamily="casual"
         android:text="ON"
         app:layout_constraintBottom_toBottomOf="@+id/textView11"
         app:layout_constraintStart_toEndOf="@+id/textView11"
@@ -162,7 +126,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
-        android:backgroundTint="#7503A9F4"
+        android:backgroundTint="#CDB5E4FA"
+        android:fontFamily="casual"
         android:text="Settings"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -176,6 +141,7 @@
         android:layout_height="wrap_content"
         android:background="#FEFFFF"
         android:backgroundTint="#7503A9F4"
+        android:fontFamily="casual"
         android:text="Categories"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/btnSettingsSP"
@@ -187,6 +153,7 @@
         android:id="@+id/txtNumQuest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="casual"
         android:layout_marginTop="8dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="@+id/sbNumQuest"
@@ -197,6 +164,7 @@
         android:id="@+id/txtTimePerQuest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="casual"
         android:layout_marginTop="8dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="@+id/sbTimePerQuest"
@@ -208,11 +176,27 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:fontFamily="casual"
+        android:layout_marginEnd="8dp"
         android:text="SAVE"
         app:layout_constraintBottom_toTopOf="@+id/btnSettingsSP"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnCancel"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnSFX" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="casual"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="CANCEL"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnSave"
+        app:layout_constraintTop_toTopOf="@+id/btnSave" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,20 +10,47 @@
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:background="#00BCD4"
+        android:background="#7503A9F4"
         android:gravity="center"
         android:text="Quizzical Pursuit"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lstCategory"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnCategories"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/btnSettings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FEFFFF"
+        android:backgroundTint="#7503A9F4"
+        android:text="Settings"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnCategories"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnCategories"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#FEFFFF"
+        android:backgroundTint="#CDB5E4FA"
+        android:text="Categories"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSettings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnSettings" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
