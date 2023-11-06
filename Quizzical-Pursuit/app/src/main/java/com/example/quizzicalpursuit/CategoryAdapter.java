@@ -1,75 +1,75 @@
 package com.example.quizzicalpursuit;
-
 import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class CategoryAdapter extends BaseAdapter {
+import java.util.*;
+
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
     ArrayList<Category> category;
     Context context;
 
-    public CategoryAdapter(ArrayList<Category> category, Context context) {
+    public CategoryAdapter(Context context,ArrayList<Category> category) {
         this.category = category;
         this.context = context;
     }
 
+    @NonNull
+    @Override
+    public CategoryAdapter.CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(context).inflate(R.layout.category_layout,parent,false);
+        return new CategoryViewHolder(v);
+    }
 
     @Override
-    public int getCount() {
+    public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
+        Category c = category.get(position);
+        holder.txtName.setText(""+c.name);
+    }
+
+    @Override
+    public int getItemCount() {
         return category.size();
     }
 
-    @Override
-    public Object getItem(int i) {
-        return category.get(i);
-    }
 
-    @Override
-    public long getItemId(int i) {
-        return 0;
-    }
+    class CategoryViewHolder extends RecyclerView.ViewHolder{
+        TextView txtName;
+        Button btnSelect;
 
-    @Override
-    public View getView(int i, View view, ViewGroup parent) {
-        view = LayoutInflater.from(context).inflate(R.layout.category_layout,parent,false);
-        TextView txtName = view.findViewById(R.id.txtName);
-        Button btnSelect = view.findViewById(R.id.btnSelect);
+        public CategoryViewHolder(@NonNull View view) {
+            super(view);
 
+            txtName = view.findViewById(R.id.txtName);
+            btnSelect = view.findViewById(R.id.btnSelect);
 
-        Category c = category.get(i);
-        txtName.setText(c.name);
+            btnSelect.setOnClickListener(e->{
+                Log.d("HESH","SPAM "+ txtName.getText());
 
-        btnSelect.setOnClickListener(e->{
-            // Create an Intent to start the GameActivity
-            Intent intent = new Intent(context, GameActivity.class);
+                Intent i = new Intent(view.getContext(), GameActivity.class);
+                Bundle b = new Bundle();
 
-            // Get the selected category's ID
-            int categoryId = category.get(i).id;
+                b.putString("CAT",""+txtName.getText());
+                //b.putInt("CATID", category.get(2).getId());
+                i.putExtras(b);
+                startActivity(view.getContext(),i,b);
+            });
 
-            // Store the category ID in SharedPreferences
-            SharedPreferences TriviaPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = TriviaPreferences.edit();
-            editor.putInt("selectedCategoryId", categoryId);
-            editor.apply();
-
-            context.startActivity(intent);
-
-        });
+        }
 
 
-
-        return view;
     }
 }

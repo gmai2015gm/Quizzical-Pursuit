@@ -83,6 +83,11 @@ public class GameActivity extends AppCompatActivity {
 
         resetBtnColor();
 
+        Bundle b = getIntent().getExtras();
+
+        //logs the current category under the CAT value
+        Log.d("HESH",b.getString("CAT")+"");
+
         Log.d("question", "test");
 
         // Create a list of questions by calling fetchQuestions on a background thread using ExecutorService.submit
