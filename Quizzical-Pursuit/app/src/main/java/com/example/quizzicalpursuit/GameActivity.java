@@ -130,6 +130,9 @@ public class GameActivity extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         categoryName = bundle.getString("CAT");
         categoryID = bundle.getInt("CATID");
+
+        Log.d("Permissions", "" + categoryID);
+        Log.d("Permissions", "" + categoryName);
     }
 
     private void populateButtonsWithQuestions(List<Question> questions, int questionNum)
