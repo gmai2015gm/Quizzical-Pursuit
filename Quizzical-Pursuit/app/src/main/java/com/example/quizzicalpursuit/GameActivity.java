@@ -58,13 +58,14 @@ public class GameActivity extends AppCompatActivity {
     SharedPreferences triviaSettings;
     Intent intent;
     CountDownTimer timer;
+    public static final String TAG = "SETTINGS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        triviaSettings = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+        triviaSettings = getSharedPreferences(TAG, Context.MODE_PRIVATE);
 
         questionTimes = new ArrayList<>();
         intent = getIntent();
