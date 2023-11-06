@@ -1,6 +1,7 @@
 package com.example.quizzicalpursuit;
 import static androidx.core.content.ContextCompat.startActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     ArrayList<Category> category;
     Context context;
+    int pos;
 
     public CategoryAdapter(Context context,ArrayList<Category> category) {
         this.category = category;
@@ -35,7 +37,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CategoryViewHolder holder, @SuppressLint("RecyclerView") int position) {
+//        pos = position;
         Category c = category.get(position);
         holder.txtName.setText(""+c.name);
     }
@@ -59,11 +62,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             btnSelect.setOnClickListener(e->{
                 Log.d("HESH","SPAM "+ txtName.getText());
 
+                pos = getAdapterPosition();
+
                 Intent i = new Intent(view.getContext(), GameActivity.class);
                 Bundle b = new Bundle();
 
                 b.putString("CAT",""+txtName.getText());
-                //b.putInt("CATID", category.get(2).getId());
+                b.putInt("CATID", category.get(pos).getId());
                 i.putExtras(b);
                 startActivity(view.getContext(),i,b);
             });
