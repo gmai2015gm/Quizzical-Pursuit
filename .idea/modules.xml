@@ -3,6 +3,11 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Quizzical-Pursuit.iml" filepath="$PROJECT_DIR$/.idea/Quizzical-Pursuit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Quizzical_Pursuit.iml" filepath="$PROJECT_DIR$/.idea/modules/Quizzical_Pursuit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Quizzical_Pursuit.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Quizzical_Pursuit.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Quizzical_Pursuit.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Quizzical_Pursuit.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Quizzical_Pursuit.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Quizzical_Pursuit.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/Quizzical_Pursuit.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/Quizzical_Pursuit.app.unitTest.iml" />
     </modules>
   </component>
 </project>
