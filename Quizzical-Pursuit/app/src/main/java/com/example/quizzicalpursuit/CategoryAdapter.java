@@ -3,6 +3,7 @@ import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -55,6 +56,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
             txtName = view.findViewById(R.id.txtName);
             btnSelect = view.findViewById(R.id.btnSelect);
+            btnSelect.setBackgroundColor(Color.parseColor("#FF4CAF50"));
+
 
             btnSelect.setOnClickListener(e->{
                 Log.d("HESH","SPAM "+ txtName.getText());
