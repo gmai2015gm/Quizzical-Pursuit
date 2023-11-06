@@ -127,7 +127,7 @@ public class GameActivity extends AppCompatActivity {
         sfx = sounds.toLowerCase().contains("sfx");
 
         //Grab our category from the intent
-        Bundle bundle = intent.getBundleExtra("");
+        Bundle bundle = intent.getExtras();
         categoryName = bundle.getString("CAT");
         categoryID = bundle.getInt("CATID");
     }
