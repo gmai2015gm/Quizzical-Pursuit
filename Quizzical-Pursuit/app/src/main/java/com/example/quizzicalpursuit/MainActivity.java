@@ -1,16 +1,17 @@
 package com.example.quizzicalpursuit;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -30,11 +31,8 @@ public class MainActivity extends AppCompatActivity {
     Button btnSettings;
     RecyclerView lstCategory;
     ArrayList<Category> category;
-
     CategoryAdapter adapter;
-
     RequestQueue queue;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,20 +41,33 @@ public class MainActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(this); // Initialize the RequestQueue
 
+        //initialize recycler and buttons
         lstCategory = findViewById(R.id.lstCategory);
         btnSettings = findViewById(R.id.btnSettings);
+
+        //initialize arraylist of categories.
         category = new ArrayList<>();
+        //apply category data
         getData();
+        //initialize adapter based on the category class
         adapter  = new CategoryAdapter(this,category);
+        //set adapter for the recyclerview.
         lstCategory.setAdapter(adapter);
 
-
+        //apply linearlayour manager
         LinearLayoutManager manager = new LinearLayoutManager(this);
+        //apply manager
         lstCategory.setLayoutManager(manager);
 
+        //on btn settings being clicked send values and open menu.
         btnSettings.setOnClickListener(e->{
+            //get context
+            GameSounds.clickSound(e.getContext());
+            //create intent
             Intent i = new Intent(this, SettingsActivity.class);
+            //send bundle
             Bundle b = new Bundle();
+            //put extras and start activity.
             i.putExtras(b);
             startActivity(i);
         });
@@ -75,7 +86,32 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         helper.attachToRecyclerView(lstCategory);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //Pull whether or not we're doing music from the preferences
+        TriviaSettings = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+
+        String sounds = TriviaSettings.getString("sounds", "music, sfx");
+        GameSounds.music = sounds.toLowerCase().contains("music");
+        GameSounds.sound = sounds.toLowerCase().contains("sfx");
+
+        //Now play the music if we're playing the music.
+        if (GameSounds.music)
+            GameSounds.playMusic(this);
+        else
+            GameSounds.stopMusic();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        //Pause the music if we leave.
+        super.onPause();
+//        GameSounds.pauseMusic();
     }
 
     // Update this method

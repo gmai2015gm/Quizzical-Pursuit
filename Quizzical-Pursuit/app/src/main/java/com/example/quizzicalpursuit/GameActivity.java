@@ -36,7 +36,6 @@ public class GameActivity extends AppCompatActivity {
     int currentQuestionIndex = 0; //The index of the question we're on currently
     List<Question> triviaQuestions; //The list of questions
 
-
     /**------Our settings------**/
     int numOfQuestions; //The number of questions in the game
     int timeLimitPerQuestion; //The time in seconds that is given per question
@@ -50,10 +49,10 @@ public class GameActivity extends AppCompatActivity {
     ArrayList<Long> questionTimes; //A log of the amount of time spent per question -- timeSpent = endTime - startTime;
     int correctAnswerCount = 0; //The number of correct answers
 
-
+    /**------Android Control Variables------**/
     ExecutorService executorService;
     Button btnAnswer1, btnAnswer2, btnAnswer3, btnAnswer4, btnQuit;
-    TextView tvQuestion;
+    TextView tvQuestion, tvProgress;
     ProgressBar pbarCountdown;
     SharedPreferences triviaSettings;
     Intent intent;
@@ -65,31 +64,29 @@ public class GameActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        triviaSettings = getSharedPreferences(TAG, Context.MODE_PRIVATE);
 
+        //Load our intent, settings, and get our question times ready
+        triviaSettings = getSharedPreferences(TAG, Context.MODE_PRIVATE);
         questionTimes = new ArrayList<>();
         intent = getIntent();
 
+        //Now that those are defined, lets populate those.
         populateSettings();
 
+        //Set up our thread for grabbing our questions
         executorService = Executors.newSingleThreadExecutor(); // Initialize ExecutorService
 
+        //Find all our controls
         btnAnswer1 = findViewById(R.id.btnAnswer1);
         btnAnswer2 = findViewById(R.id.btnAnswer2);
         btnAnswer3 = findViewById(R.id.btnAnswer3);
         btnAnswer4 = findViewById(R.id.btnAnswer4);
         btnQuit = findViewById(R.id.btnQuit);
         tvQuestion = findViewById(R.id.tvQuestion);
+        tvProgress = findViewById(R.id.tvProgress);
         pbarCountdown = findViewById(R.id.pBarCountdown);
 
         resetBtnColor();
-
-        Bundle b = getIntent().getExtras();
-
-        //logs the current category under the CAT value
-        Log.d("HESH",b.getString("CAT")+"");
-
-        Log.d("question", "test");
 
         // Create a list of questions by calling fetchQuestions on a background thread using ExecutorService.submit
         executorService.submit(() -> {
@@ -101,7 +98,6 @@ public class GameActivity extends AppCompatActivity {
             {
                 // Populate buttons with questions and answers
                 populateButtonsWithQuestions(triviaQuestions, 0);
-                Log.d("question", "test3");
             }
             else
             {
@@ -114,6 +110,7 @@ public class GameActivity extends AppCompatActivity {
         //If the user clicks this, they want to leave, so we go back.
         btnQuit.setOnClickListener((view)->{
             this.finish();
+            GameSounds.endSound(this);
         });
     }
 
@@ -123,6 +120,7 @@ public class GameActivity extends AppCompatActivity {
         numOfQuestions = triviaSettings.getInt("numQuestions", 10);
         timeLimitPerQuestion = triviaSettings.getInt("timePerQuestion", 30);
 
+        //TODO - do we need this bit of code? I think NOT. Welll...maybe
         String sounds = triviaSettings.getString("sounds", "music, sfx");
         backgroundMusic = sounds.toLowerCase().contains("music");
         sfx = sounds.toLowerCase().contains("sfx");
@@ -132,8 +130,8 @@ public class GameActivity extends AppCompatActivity {
         categoryName = bundle.getString("CAT");
         categoryID = bundle.getInt("CATID");
 
-        Log.d("Permissions", "" + categoryID);
-        Log.d("Permissions", "" + categoryName);
+        Log.d("Category", "" + categoryID);
+        Log.d("Category", "" + categoryName);
     }
 
     private void populateButtonsWithQuestions(List<Question> questions, int questionNum)
@@ -149,6 +147,8 @@ public class GameActivity extends AppCompatActivity {
             incorrectAnswers.add(question.getIncorrectAnswer2());
             incorrectAnswers.add(question.getIncorrectAnswer3());
 
+            tvProgress.setText((questionNum+1) + "/" + numOfQuestions);
+
             List<String> answerOptions = new ArrayList<>();
             answerOptions.add(correctAnswer);
             answerOptions.addAll(incorrectAnswers);
@@ -162,18 +162,22 @@ public class GameActivity extends AppCompatActivity {
             btnAnswer4.setText(answerOptions.get(3));
 
             btnAnswer1.setOnClickListener(e -> {
+                GameSounds.clickSound(e.getContext());
                 checkAnswer(btnAnswer1.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer2.setOnClickListener(e -> {
+                GameSounds.clickSound(e.getContext());
                 checkAnswer(btnAnswer2.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer3.setOnClickListener(e -> {
+                GameSounds.clickSound(e.getContext());
                 checkAnswer(btnAnswer3.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer4.setOnClickListener(e -> {
+                GameSounds.clickSound(e.getContext());
                 checkAnswer(btnAnswer4.getText().toString(), correctAnswer, false);
             });
 
@@ -222,7 +226,6 @@ public class GameActivity extends AppCompatActivity {
                 btn.setBackgroundColor(Color.RED);
                 btn.setTextColor(Color.WHITE);
             }
-
         }
     }
 
@@ -271,23 +274,35 @@ public class GameActivity extends AppCompatActivity {
         toSummary.putExtra("time", avgSecTime+" sec");
 
         startActivity(toSummary);
+        GameSounds.endSound(this);
         this.finish();
     }
 
     private void checkAnswer(String selectedAnswer, String correctAnswer, boolean timeout)
     {
+        //If it's correct; inform the user, increment it, play the appropriate sound.
         if (selectedAnswer.equals(correctAnswer))
         {
             tvQuestion.setText("You got the correct answer");
             correctAnswerCount++;
+
+            GameSounds.correctSound(this);
         }
+        // If they ran out of time, they suck. So inform them.
         else if (timeout)
+        {
             tvQuestion.setText("You ran out of time");
+            GameSounds.vineBoom(this);
+        }
+        // If we get here, they got it wrong.
         else
+        {
             tvQuestion.setText("You got the incorrect answer");
+            GameSounds.wrongSound(this);
+        }
 
+        //No Matter what we cancel the timer, show the right answer, and move forward.
         timer.cancel();
-
         showRightAnswer(correctAnswer);
 
         //Add the time to our log

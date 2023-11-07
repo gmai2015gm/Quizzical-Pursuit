@@ -57,23 +57,32 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         public CategoryViewHolder(@NonNull View view) {
             super(view);
 
+            //intialize local buttons for recyclerview.
             txtName = view.findViewById(R.id.txtName);
             btnSelect = view.findViewById(R.id.btnSelect);
             btnSelect.setBackgroundColor(Color.parseColor("#FF4CAF50"));
 
 
+            //on btnselect being clicked perform the following.
             btnSelect.setOnClickListener(e->{
                 Log.d("HESH","SPAM "+ txtName.getText());
 
+                //set position value
                 pos = getAdapterPosition();
 
+                //create intent and generate bundle
                 Intent i = new Intent(view.getContext(), GameActivity.class);
                 Bundle b = new Bundle();
 
+                //send CATegory and CATegoryID to gameactivity.
                 b.putString("CAT",""+txtName.getText());
                 b.putInt("CATID", category.get(pos).getId());
+
+                //apply bundle and send values.
                 i.putExtras(b);
                 startActivity(view.getContext(),i,b);
+
+                GameSounds.vineBoom(e.getContext());
             });
 
         }
