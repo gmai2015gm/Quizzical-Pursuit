@@ -6,8 +6,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
+    static boolean musicPlaying = false;
     SharedPreferences TriviaSettings;
 
     Button btnSettings;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     RequestQueue queue;
 
+    MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         lstCategory.setLayoutManager(manager);
 
         btnSettings.setOnClickListener(e->{
+            GameSounds.clickSound(e.getContext());
+
             Intent i = new Intent(this, SettingsActivity.class);
             Bundle b = new Bundle();
             i.putExtras(b);
@@ -76,6 +83,42 @@ public class MainActivity extends AppCompatActivity {
         });
         helper.attachToRecyclerView(lstCategory);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("TEST", "Resume");
+
+        TriviaSettings = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+
+        String sounds = TriviaSettings.getString("sounds", "music, sfx");
+        GameSounds.music = sounds.toLowerCase().contains("music");
+        GameSounds.sound = sounds.toLowerCase().contains("sfx");
+
+        if (GameSounds.music)
+            GameSounds.playMusic(this);
+        else
+            GameSounds.stopMusic();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("TEST", "PAUSE");
+    }
+
+    @Override
+    protected void onStop() {
+//        if (!player.isPlaying())
+            super.onStop();
+        Log.d("TEST", "STOPPED");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("TEST", "DESTROY");
     }
 
     // Update this method

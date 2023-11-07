@@ -80,6 +80,8 @@ public class SettingsActivity extends AppCompatActivity {
                 btnMusic.setText("On");
                 sounds.add("Music");
                 music = true;
+
+
             }
             if (s.contains("SFX")) {
                 btnSFX.setBackgroundColor(Color.parseColor("#FF4CAF50"));
@@ -123,11 +125,14 @@ public class SettingsActivity extends AppCompatActivity {
                 btnMusic.setBackgroundColor(Color.parseColor("#FF4CAF50"));
                 btnMusic.setText("On");
                 sounds.add("Music");
+
+
             } else if (music) {
                 music = false;
                 btnMusic.setBackgroundColor(Color.RED);
                 btnMusic.setText("Off");
                 sounds.remove("Music");
+
             }
         });
 
@@ -188,12 +193,18 @@ public class SettingsActivity extends AppCompatActivity {
         btnCategoriesSP.setOnClickListener(e -> {
             Intent i = new Intent(this, MainActivity.class);
             resultLauncher.launch(i);
+
+            GameSounds.clickSound(e.getContext());
         });
 
         // Will send user to Settings again if they wish to
         btnCancel.setOnClickListener(e -> {
-            Intent i = new Intent(this, SettingsActivity.class);
-            resultLauncher.launch(i);
+//            Intent i = new Intent(this, SettingsActivity.class);
+//            resultLauncher.launch(i);
+
+
+            this.finish();
+            GameSounds.clickSound(e.getContext());
         });
 
 

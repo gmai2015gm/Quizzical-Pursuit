@@ -74,6 +74,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 b.putInt("CATID", category.get(pos).getId());
                 i.putExtras(b);
                 startActivity(view.getContext(),i,b);
+
+                GameSounds.vineBoom(e.getContext());
             });
 
         }

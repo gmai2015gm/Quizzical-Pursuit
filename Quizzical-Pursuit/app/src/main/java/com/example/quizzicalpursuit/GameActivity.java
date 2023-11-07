@@ -114,6 +114,7 @@ public class GameActivity extends AppCompatActivity {
         //If the user clicks this, they want to leave, so we go back.
         btnQuit.setOnClickListener((view)->{
             this.finish();
+            GameSounds.endSound(this);
         });
     }
 
@@ -162,18 +163,22 @@ public class GameActivity extends AppCompatActivity {
             btnAnswer4.setText(answerOptions.get(3));
 
             btnAnswer1.setOnClickListener(e -> {
+                GameSounds.clickSound(e.getContext());
                 checkAnswer(btnAnswer1.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer2.setOnClickListener(e -> {
+                GameSounds.clickSound(e.getContext());
                 checkAnswer(btnAnswer2.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer3.setOnClickListener(e -> {
+                GameSounds.clickSound(e.getContext());
                 checkAnswer(btnAnswer3.getText().toString(), correctAnswer, false);
             });
 
             btnAnswer4.setOnClickListener(e -> {
+                GameSounds.clickSound(e.getContext());
                 checkAnswer(btnAnswer4.getText().toString(), correctAnswer, false);
             });
 
@@ -272,6 +277,7 @@ public class GameActivity extends AppCompatActivity {
 
         startActivity(toSummary);
         this.finish();
+        GameSounds.endSound(this);
     }
 
     private void checkAnswer(String selectedAnswer, String correctAnswer, boolean timeout)
@@ -280,11 +286,20 @@ public class GameActivity extends AppCompatActivity {
         {
             tvQuestion.setText("You got the correct answer");
             correctAnswerCount++;
+
+            GameSounds.correctSound(this);
         }
         else if (timeout)
+        {
             tvQuestion.setText("You ran out of time");
+            GameSounds.vineBoom(this);
+        }
         else
+        {
             tvQuestion.setText("You got the incorrect answer");
+            GameSounds.wrongSound(this);
+        }
+
 
         timer.cancel();
 
