@@ -48,22 +48,33 @@ public class MainActivity extends AppCompatActivity {
 
         queue = Volley.newRequestQueue(this); // Initialize the RequestQueue
 
+        //initialize recycler and buttons
         lstCategory = findViewById(R.id.lstCategory);
         btnSettings = findViewById(R.id.btnSettings);
+
+        //initialize arraylist of categories.
         category = new ArrayList<>();
+        //apply category data
         getData();
+        //initialize adapter based on the category class
         adapter  = new CategoryAdapter(this,category);
+        //set adapter for the recyclerview.
         lstCategory.setAdapter(adapter);
 
-
+        //apply linearlayour manager
         LinearLayoutManager manager = new LinearLayoutManager(this);
+        //apply manager
         lstCategory.setLayoutManager(manager);
 
+        //on btn settings being clicked send values and open menu.
         btnSettings.setOnClickListener(e->{
+            //get context
             GameSounds.clickSound(e.getContext());
-
+            //create intent
             Intent i = new Intent(this, SettingsActivity.class);
+            //send bundle
             Bundle b = new Bundle();
+            //put extras and start activity.
             i.putExtras(b);
             startActivity(i);
         });

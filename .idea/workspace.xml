@@ -9,9 +9,10 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="fbfd8eaf-4c0c-4278-a7e4-33f61a123b4a" name="Changes" comment="test?">
+    <list default="true" id="fbfd8eaf-4c0c-4278-a7e4-33f61a123b4a" name="Changes" comment="fix the start game crash with bundles 11/6/23">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Quizzical-Pursuit/app/src/main/java/com/example/quizzicalpursuit/GameActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/Quizzical-Pursuit/app/src/main/java/com/example/quizzicalpursuit/GameActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Quizzical-Pursuit/app/src/main/java/com/example/quizzicalpursuit/CategoryAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/Quizzical-Pursuit/app/src/main/java/com/example/quizzicalpursuit/CategoryAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Quizzical-Pursuit/app/src/main/java/com/example/quizzicalpursuit/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/Quizzical-Pursuit/app/src/main/java/com/example/quizzicalpursuit/MainActivity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,6 +22,9 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[C:\Users\gmani\.android\avd\Pixel_XL_API_33.avd]" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2Xdb7Q7jhEgPfBQE7ZtxaOtw8rK" />
   <component name="ProjectLevelVcsManager">
@@ -143,6 +147,18 @@
       <option name="presentableId" value="Default" />
       <updated>1698961739815</updated>
     </task>
+    <task id="LOCAL-00001" summary="fix the start game crash with bundles 11/6/23">
+      <created>1699278911678</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1699278911679</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fix the start game crash with bundles 11/6/23" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix the start game crash with bundles 11/6/23" />
   </component>
 </project>
