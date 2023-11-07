@@ -1,19 +1,17 @@
 package com.example.quizzicalpursuit;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.media.MediaPlayer;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,18 +26,13 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
-    static boolean musicPlaying = false;
     SharedPreferences TriviaSettings;
 
     Button btnSettings;
     RecyclerView lstCategory;
     ArrayList<Category> category;
-
     CategoryAdapter adapter;
-
     RequestQueue queue;
-
-    MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,20 +86,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         helper.attachToRecyclerView(lstCategory);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("TEST", "Resume");
 
+        //Pull whether or not we're doing music from the preferences
         TriviaSettings = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
 
         String sounds = TriviaSettings.getString("sounds", "music, sfx");
         GameSounds.music = sounds.toLowerCase().contains("music");
         GameSounds.sound = sounds.toLowerCase().contains("sfx");
 
+        //Now play the music if we're playing the music.
         if (GameSounds.music)
             GameSounds.playMusic(this);
         else
@@ -114,22 +107,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
+        //Pause the music if we leave.
         super.onPause();
-        Log.d("TEST", "PAUSE");
-    }
-
-    @Override
-    protected void onStop() {
-//        if (!player.isPlaying())
-            super.onStop();
-        Log.d("TEST", "STOPPED");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d("TEST", "DESTROY");
+//        GameSounds.pauseMusic();
     }
 
     // Update this method
