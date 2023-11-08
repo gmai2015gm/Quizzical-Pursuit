@@ -4,17 +4,22 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -24,6 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
     SeekBar sbNumQuest, sbTimePerQuest;
     TextView txtNumQuest, txtTimePerQuest;
     Button btnMusic, btnSFX, btnSettingsSP, btnCategoriesSP, btnSave, btnCancel;
+    ImageButton ibInsta;
     String TAG = "SETTINGS";
     ArrayList<String> sounds;
 
@@ -51,16 +57,17 @@ public class SettingsActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
         btnSettingsSP = findViewById(R.id.btnSettingsSP);
         btnCategoriesSP = findViewById(R.id.btnCategoriesSP);
+        ibInsta = findViewById(R.id.ibInsta);
         sbNumQuest = findViewById(R.id.sbNumQuest);
         sbTimePerQuest = findViewById(R.id.sbTimePerQuest);
         txtNumQuest = findViewById(R.id.txtNumQuest);
         txtTimePerQuest = findViewById(R.id.txtTimePerQuest);
 
         // Set background color for the buttons initially
-        btnMusic.setBackgroundColor(Color.RED);
-        btnSFX.setBackgroundColor(Color.RED);
+//        btnMusic.setBackgroundColor(Color.parseColor("#F64C4C"));
+//        btnSFX.setBackgroundColor(Color.parseColor("#F64C4C"));
         btnSave.setBackgroundColor(Color.parseColor("#FF4CAF50"));
-        btnCancel.setBackgroundColor(Color.RED);
+        btnCancel.setBackgroundColor(Color.parseColor("#F64C4C"));
 
         // Get the preferences for if user wants music or sfx
         String[] sound = preferences.getString("sounds", "Music, SFX").split(",");
@@ -71,25 +78,36 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Initialize the array list for sounds
         sounds = new ArrayList<>();
+        List<String> s = Arrays.asList(sound);
 
         // Show if user initially wanted music or sfx
         // Change text and background to match
-        for (String s : sound) {
+            Log.d(TAG, Arrays.toString(sound));
             if (s.contains("Music")) {
                 btnMusic.setBackgroundColor(Color.parseColor("#FF4CAF50"));
                 btnMusic.setText("On");
                 sounds.add("Music");
                 music = true;
-
-
+                GameSounds.music = true;
+                GameSounds.playMusic(this);
+            } else {
+                Log.d(TAG, "no music");
+                music = false;
+                btnMusic.setText("Off");
+                btnMusic.setBackgroundColor(Color.parseColor("#F64C4C"));
             }
             if (s.contains("SFX")) {
                 btnSFX.setBackgroundColor(Color.parseColor("#FF4CAF50"));
-                btnMusic.setText("On");
+                btnSFX.setText("On");
                 sounds.add("SFX");
+                GameSounds.sound = true;
                 sfx = true;
+            } else {
+                Log.d(TAG, "no sfx");
+                sfx = false;
+                btnSFX.setText("Off");
+                btnSFX.setBackgroundColor(Color.parseColor("#F64C4C"));
             }
-        }
 
         // When this button is clicked, preferences will be saved
         btnSave.setOnClickListener(e -> {
@@ -98,6 +116,18 @@ public class SettingsActivity extends AppCompatActivity {
             for (int j = 0; j < sounds.size(); j++) {
                 sendSound += sounds.get(j) + ",";
             }
+
+            GameSounds.music = true;
+            if (GameSounds.music) {
+                GameSounds.playMusic(this);
+            } else {
+                GameSounds.pauseMusic();
+            }
+
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
+            }
+
 
             // Edit the numQuestions, timePerQuestion, question type, and sounds in preferences
             editor.putInt("numQuestions", Integer.parseInt(txtNumQuest.getText() + ""));
@@ -115,6 +145,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         });
 
+        ibInsta.setOnClickListener(e -> {
+            Uri uri = Uri.parse("https://www.instagram.com/pursuitquizzical");
+            Intent i = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(i);
+        });
+
 
         // Each time a button is clicked they will be added of removed from the sounds array
         btnMusic.setOnClickListener(e -> {
@@ -125,14 +161,17 @@ public class SettingsActivity extends AppCompatActivity {
                 btnMusic.setBackgroundColor(Color.parseColor("#FF4CAF50"));
                 btnMusic.setText("On");
                 sounds.add("Music");
-
-
-            } else if (music) {
+                GameSounds.music = true;
+                GameSounds.playMusic(this);
+            } else {
                 music = false;
-                btnMusic.setBackgroundColor(Color.RED);
+                btnMusic.setBackgroundColor(Color.parseColor("#F64C4C"));
                 btnMusic.setText("Off");
                 sounds.remove("Music");
-
+                GameSounds.pauseMusic();
+            }
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
             }
         });
 
@@ -145,11 +184,16 @@ public class SettingsActivity extends AppCompatActivity {
                 btnSFX.setBackgroundColor(Color.parseColor("#FF4CAF50"));
                 btnSFX.setText("On");
                 sounds.add("SFX");
-            } else if (sfx) {
+                GameSounds.sound = true;
+            } else {
                 sfx = false;
-                btnSFX.setBackgroundColor(Color.RED);
+                btnSFX.setBackgroundColor(Color.parseColor("#F64C4C"));
                 btnSFX.setText("Off");
                 sounds.remove("SFX");
+                GameSounds.sound = false;
+            }
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
             }
         });
 
@@ -191,20 +235,22 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Will send user to Main activity
         btnCategoriesSP.setOnClickListener(e -> {
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
+            }
             Intent i = new Intent(this, MainActivity.class);
             resultLauncher.launch(i);
-
-            GameSounds.clickSound(e.getContext());
         });
 
         // Will send user to Settings again if they wish to
         btnCancel.setOnClickListener(e -> {
-//            Intent i = new Intent(this, SettingsActivity.class);
-//            resultLauncher.launch(i);
-
-
-            this.finish();
-            GameSounds.clickSound(e.getContext());
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
+            }
+            Intent i = new Intent(this, SettingsActivity.class);
+            // Display message for user when things are saved correctly
+            Toast.makeText(this, "Changes Deleted.", Toast.LENGTH_LONG).show();
+            resultLauncher.launch(i);
         });
 
 
