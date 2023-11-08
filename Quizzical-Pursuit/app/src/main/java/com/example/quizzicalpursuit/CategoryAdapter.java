@@ -52,12 +52,27 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         try{
             String keeper = sp.getString("fa"," ");
             String holderArray[] = keeper.split(" ");
+
             for(int k = 0;k<holderArray.length;k++){
                 faveList.add(Integer.parseInt(holderArray[k]));
             }
 
             if(faveList.contains(category.get(position).getId())){
                 holder.btnFav.setImageResource(R.drawable.h1);
+                /*
+                Category ckeeper = c;
+                category.remove(c);
+
+                for(int k= position-1;k>1;k--){
+                    Category state = category.get(k);
+                    //Log.d("HESH","YEET");
+
+                    category.set(k,state);
+                }
+                category.add(0,ckeeper);
+                notifyDataSetChanged();
+                */
+
             }else{
                 holder.btnFav.setImageResource(R.drawable.h2);
             }
@@ -126,6 +141,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             });
 
             btnFav.setOnClickListener(e->{
+                Category c = category.get(getAdapterPosition());
+
                 if(!faveList.contains(category.get(getAdapterPosition()).getId())){
                     faveList.add(category.get(getAdapterPosition()).getId());
                     //btnFav.setImageResource(R.drawable.h1);
@@ -133,9 +150,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
                     faveList.remove(faveList.indexOf(category.get(getAdapterPosition()).getId()));
                     btnFav.setImageResource(R.drawable.h2);
+                    Category ckeeper = c;
+                    category.remove(c);
+
+                    category.add(category.size(),ckeeper);
+                    notifyDataSetChanged();
                 }
 
-                if(faveList.contains(category.get(getAdapterPosition()).getId())){
+                if(faveList.contains(c.getId())){
                     btnFav.setImageResource(R.drawable.h1);
                 }
 
@@ -145,30 +167,27 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                     fav += faveList.get(j).toString() + " ";
                 }
 
-                Category c = category.get(getAdapterPosition());
 
-                //for(int j = 0;j<category.size();j++){
 
-                    if(faveList.contains(c.getId())){
-                        Category ckeeper = c;
-                        category.remove(c);
+                if(faveList.contains(c.getId())){
+                    Category ckeeper = c;
+                    category.remove(c);
+                    for(int k= getAdapterPosition()-1;k>1;k--){
+                        Category state = category.get(k);
+                        //Log.d("HESH","YEET");
 
-                        for(int k=0;k<category.size()-1;k++){
-                            Category state = category.get(k+1);
-                            category.set(k,state);
-                        }
-                        category.add(0,ckeeper);
-                        notifyDataSetChanged();
-
+                        category.set(k,state);
                     }
+                    category.add(0,ckeeper);
+                    notifyDataSetChanged();
+                }
 
-                //}
 
                 //category.sort(Comparator.comparing(faveList -> faveList.getId()));
                 ed.putString("fa",fav);
                 ed.apply();
 
-                Log.d("HESH"," "+ faveList.toString());
+                Log.d("HESH",category.size()+" "+ faveList.toString());
 
             });
 
