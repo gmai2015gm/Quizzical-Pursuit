@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/txtName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="228dp"
+        android:layout_height="51dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
@@ -34,5 +35,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnFav"
+        android:layout_width="43dp"
+        android:layout_height="55dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnSelect"
+        app:layout_constraintEnd_toStartOf="@+id/btnSelect"
+        app:layout_constraintStart_toEndOf="@+id/txtName"
+        app:layout_constraintTop_toTopOf="@+id/btnSelect"
+        tools:srcCompat="@drawable/h2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
