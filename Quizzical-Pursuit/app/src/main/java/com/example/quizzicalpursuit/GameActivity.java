@@ -113,6 +113,7 @@ public class GameActivity extends AppCompatActivity {
 
         //If the user clicks this, they want to leave, so we go back.
         btnQuit.setOnClickListener((view)->{
+            timer.cancel();
             this.finish();
             GameSounds.endSound(this);
         });
@@ -276,6 +277,7 @@ public class GameActivity extends AppCompatActivity {
         toSummary.putExtra("time", avgSecTime+" sec");
 
         startActivity(toSummary);
+        timer.cancel();
         this.finish();
         GameSounds.endSound(this);
     }
