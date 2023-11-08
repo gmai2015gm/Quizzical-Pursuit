@@ -2,6 +2,10 @@ package com.example.quizzicalpursuit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,7 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LifecycleObserver {
     static boolean musicPlaying = false;
     SharedPreferences TriviaSettings;
 
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
         queue = Volley.newRequestQueue(this); // Initialize the RequestQueue
 
@@ -111,6 +116,20 @@ public class MainActivity extends AppCompatActivity {
             GameSounds.playMusic(this);
         else
             GameSounds.stopMusic();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    public void onAppBackgrounded() {
+        Log.d("APP_STATUS", "App in Foreground");
+        if(GameSounds.music && GameSounds.musicPlayer.isPlaying())
+            GameSounds.musicPlayer.pause();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        Log.d("APP_STATUS", "App in Background");
+        if(GameSounds.music && GameSounds.musicPlayer.isPlaying())
+            GameSounds.musicPlayer.start();
     }
 
     @Override
