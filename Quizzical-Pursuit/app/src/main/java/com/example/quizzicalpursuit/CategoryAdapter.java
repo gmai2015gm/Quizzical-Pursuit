@@ -145,12 +145,30 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                     fav += faveList.get(j).toString() + " ";
                 }
 
+                Category c = category.get(getAdapterPosition());
+
+                //for(int j = 0;j<category.size();j++){
+
+                    if(faveList.contains(c.getId())){
+                        Category ckeeper = c;
+                        category.remove(c);
+
+                        for(int k=0;k<category.size()-1;k++){
+                            Category state = category.get(k+1);
+                            category.set(k,state);
+                        }
+                        category.add(0,ckeeper);
+                        notifyDataSetChanged();
+
+                    }
+
+                //}
+
                 //category.sort(Comparator.comparing(faveList -> faveList.getId()));
-                //notifyDataSetChanged();
                 ed.putString("fa",fav);
                 ed.apply();
 
-                Log.d("HESH",category.get(getAdapterPosition()).getId()+" "+ faveList.toString());
+                Log.d("HESH"," "+ faveList.toString());
 
             });
 
