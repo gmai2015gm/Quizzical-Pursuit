@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -409,7 +410,11 @@ public class GameActivity extends AppCompatActivity {
                 String incorrectAnswer2 = incorrectAnswers.getString(1);
                 String incorrectAnswer3 = incorrectAnswers.getString(2);
 
-                Question questionObj = new Question(question, correctAnswer, incorrectAnswer1, incorrectAnswer2, incorrectAnswer3);
+                Question questionObj = new Question(String.valueOf(Html.fromHtml(question)),
+                        String.valueOf(Html.fromHtml(correctAnswer)),
+                        String.valueOf(Html.fromHtml(incorrectAnswer1)),
+                        String.valueOf(Html.fromHtml(incorrectAnswer2)),
+                        String.valueOf(Html.fromHtml(incorrectAnswer3)));
                 questionList.add(questionObj);
             }
         } catch (JSONException e) {
