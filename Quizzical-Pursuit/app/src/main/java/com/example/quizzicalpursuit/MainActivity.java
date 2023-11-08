@@ -1,8 +1,18 @@
 package com.example.quizzicalpursuit;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.*;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.ProcessLifecycleOwner;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -23,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new AppLifecycleListener(this));
 
         queue = Volley.newRequestQueue(this); // Initialize the RequestQueue
 
@@ -98,12 +110,12 @@ public class MainActivity extends AppCompatActivity {
         String sounds = TriviaSettings.getString("sounds", "music, sfx");
         GameSounds.music = sounds.toLowerCase().contains("music");
         GameSounds.sound = sounds.toLowerCase().contains("sfx");
-
-        //Now play the music if we're playing the music.
-        if (GameSounds.music)
-            GameSounds.playMusic(this);
-        else
-            GameSounds.stopMusic();
+//
+//        //Now play the music if we're playing the music.
+//        if (GameSounds.music)
+//            GameSounds.playMusic(this);
+//        else
+//            GameSounds.stopMusic();
     }
 
     @Override
@@ -139,6 +151,42 @@ public class MainActivity extends AppCompatActivity {
         queue.add(r);
     }
 
+    /**
+     * Custom Listener class enabling wider scope of App Lifetime.
+     * Allows monitoring of the foreground/background status of the app
+     */
+    class AppLifecycleListener implements DefaultLifecycleObserver {
+        Context mainContext;
 
+    public AppLifecycleListener(Context context) {
+        mainContext = context;
+    }
 
+    @Override
+    public void onStart(@NonNull LifecycleOwner owner) {
+        Log.d("PROCESS_LIFECYCLE", "Starting through new Class");
+        DefaultLifecycleObserver.super.onStart(owner);
+
+        TriviaSettings = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+
+        String sounds = TriviaSettings.getString("sounds", "music, sfx");
+        GameSounds.music = sounds.toLowerCase().contains("music");
+        GameSounds.sound = sounds.toLowerCase().contains("sfx");
+
+        if (GameSounds.music)
+            GameSounds.playMusic(mainContext);
+        else
+            GameSounds.stopMusic();
+    }
+
+    @Override
+    public void onPause(@NonNull LifecycleOwner owner) {
+        Log.d("PROCESS_LIFECYCLE", "Stopping through new Class");
+        DefaultLifecycleObserver.super.onPause(owner);
+        if(GameSounds.music) {
+            GameSounds.storeProgress();
+            GameSounds.stopMusic();
+        }
+    }
+}
 }

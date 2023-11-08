@@ -8,6 +8,7 @@ public class GameSounds {
     private static MediaPlayer musicPlayer; //Our Player for the music
     static boolean music = true; //Whether or not we want music
     static boolean sound = true; //Whether or not we want sounds
+    static int msec = 0;
     public static void playMusic(Context c)
     {
         //Make sure that we want music, and music does not already exist
@@ -17,6 +18,7 @@ public class GameSounds {
 
             musicPlayer.setLooping(true);
             musicPlayer.start();
+            musicPlayer.seekTo(msec);
         }
     }
     public static void stopMusic()
@@ -90,5 +92,11 @@ public class GameSounds {
 //            fxPlayer.start();
 //        }
 
+    }
+    public static void storeProgress() {
+        if(musicPlayer != null && musicPlayer.isPlaying())
+            msec = musicPlayer.getCurrentPosition();
+        else
+            msec = 0;
     }
 }
