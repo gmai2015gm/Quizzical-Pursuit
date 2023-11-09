@@ -25,7 +25,10 @@ public class GameSounds {
     {
         //Make sure it's playing and it exists
         if (musicPlayer != null && musicPlayer.isPlaying())
+        {
             musicPlayer.stop();
+        }
+
     }
 
     public static void pauseMusic()
@@ -41,57 +44,41 @@ public class GameSounds {
         if (sound)
         {
             fxPlayer = MediaPlayer.create(c, id);
+            fxPlayer.setVolume(10000, 10000);
             fxPlayer.start();
+
+            fxPlayer.setOnCompletionListener(mediaPlayer -> {
+                fxPlayer.release();
+            });
         }
     }
     public static void clickSound(Context c)
     {
         makeASound(c, R.raw.click);
 
-//        //If we want sound, we make sound
-//        if (sound)
-//        {
-//            fxPlayer = MediaPlayer.create(c, R.raw.click);
-//            fxPlayer.start();
-//        }
-
     }
     public static void correctSound(Context c)
     {
         makeASound(c, R.raw.correct);
-//        if (sound)
-//        {
-//            fxPlayer = MediaPlayer.create(c, R.raw.correct);
-//            fxPlayer.start();
-//        }
+
     }
     public static void wrongSound(Context c)
     {
         makeASound(c, R.raw.mistakemod);
-//        if (sound)
-//        {
-//            fxPlayer = MediaPlayer.create(c, R.raw.mistakemod);
-//            fxPlayer.start();
-//        }
+
     }
     public static void endSound(Context c)
     {
         makeASound(c, R.raw.complete);
-//        if (sound)
-//        {
-//            fxPlayer = MediaPlayer.create(c, R.raw.complete);
-//            fxPlayer.start();
-//        }
+
     }
     public static void vineBoom(Context c)
     {
         makeASound(c, R.raw.vineboom);
-//        if (sound)
-//        {
-//            fxPlayer = MediaPlayer.create(c, R.raw.vineboom);
-//            fxPlayer.start();
-//        }
-
+    }
+    public static void startSound(Context c)
+    {
+        makeASound(c, R.raw.newgame);
     }
     public static void storeProgress() {
         if(musicPlayer != null && musicPlayer.isPlaying())

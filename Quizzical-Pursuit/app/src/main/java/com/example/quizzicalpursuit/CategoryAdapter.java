@@ -82,7 +82,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 i.putExtras(b);
                 startActivity(view.getContext(),i,b);
 
-                GameSounds.vineBoom(e.getContext());
+                GameSounds.startSound(e.getContext());
             });
 
         }
