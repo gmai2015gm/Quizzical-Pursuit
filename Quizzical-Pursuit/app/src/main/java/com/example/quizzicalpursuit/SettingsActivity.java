@@ -4,26 +4,31 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
-
     ActivityResultLauncher resultLauncher;
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
     SeekBar sbNumQuest, sbTimePerQuest;
     TextView txtNumQuest, txtTimePerQuest;
     Button btnMusic, btnSFX, btnSettingsSP, btnCategoriesSP, btnSave, btnCancel;
+    ImageButton ibInsta;
     String TAG = "SETTINGS";
     ArrayList<String> sounds;
 
@@ -51,16 +56,15 @@ public class SettingsActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
         btnSettingsSP = findViewById(R.id.btnSettingsSP);
         btnCategoriesSP = findViewById(R.id.btnCategoriesSP);
+        ibInsta = findViewById(R.id.ibInsta);
         sbNumQuest = findViewById(R.id.sbNumQuest);
         sbTimePerQuest = findViewById(R.id.sbTimePerQuest);
         txtNumQuest = findViewById(R.id.txtNumQuest);
         txtTimePerQuest = findViewById(R.id.txtTimePerQuest);
 
         // Set background color for the buttons initially
-        btnMusic.setBackgroundColor(Color.RED);
-        btnSFX.setBackgroundColor(Color.RED);
         btnSave.setBackgroundColor(Color.parseColor("#FF4CAF50"));
-        btnCancel.setBackgroundColor(Color.RED);
+        btnCancel.setBackgroundColor(Color.parseColor("#F64C4C"));
 
         // Get the preferences for if user wants music or sfx
         String[] sound = preferences.getString("sounds", "Music, SFX").split(",");
@@ -71,87 +75,40 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Initialize the array list for sounds
         sounds = new ArrayList<>();
+        List<String> s = Arrays.asList(sound);
 
-        // Show if user initially wanted music or sfx
+        // Show if user initially wanted music
         // Change text and background to match
-        for (String s : sound) {
-            if (s.contains("Music")) {
-                btnMusic.setBackgroundColor(Color.parseColor("#FF4CAF50"));
-                btnMusic.setText("On");
-                sounds.add("Music");
-                music = true;
+        if (s.contains("Music")) {
+            btnMusic.setBackgroundColor(Color.parseColor("#FF4CAF50"));
+            btnMusic.setText("On");
+            sounds.add("Music");
+            music = true;
 
-
-            }
-            if (s.contains("SFX")) {
-                btnSFX.setBackgroundColor(Color.parseColor("#FF4CAF50"));
-                btnMusic.setText("On");
-                sounds.add("SFX");
-                sfx = true;
-            }
+            // Start the music
+            GameSounds.music = true;
+            GameSounds.playMusic(this);
+        } else {
+            music = false;
+            btnMusic.setText("Off");
+            btnMusic.setBackgroundColor(Color.parseColor("#F64C4C"));
         }
 
-        // When this button is clicked, preferences will be saved
-        btnSave.setOnClickListener(e -> {
-            // Make sound type string to send through preferences
-            String sendSound = "";
-            for (int j = 0; j < sounds.size(); j++) {
-                sendSound += sounds.get(j) + ",";
-            }
+        // Show if user initially wanted sfx
+        // Change text and background to match
+        if (s.contains("SFX")) {
+            btnSFX.setBackgroundColor(Color.parseColor("#FF4CAF50"));
+            btnSFX.setText("On");
+            sounds.add("SFX");
 
-            // Edit the numQuestions, timePerQuestion, question type, and sounds in preferences
-            editor.putInt("numQuestions", Integer.parseInt(txtNumQuest.getText() + ""));
-            editor.putInt("timePerQuestion", Integer.parseInt(txtTimePerQuest.getText() + ""));
-            editor.putString("sounds", sendSound);
-            editor.apply();
-
-            // To check if things are saving correctly
-            Log.d(TAG, "numQuestions" + preferences.getInt("numQuestions", 1));
-            Log.d(TAG, "timePerQuestion" + preferences.getInt("timePerQuestion", 1));
-            Log.d(TAG, "sounds" + preferences.getString("sounds", "1"));
-
-            // Display message for user when things are saved correctly
-            Toast.makeText(this, "Changes saved successfully.", Toast.LENGTH_LONG).show();
-
-        });
-
-
-        // Each time a button is clicked they will be added of removed from the sounds array
-        btnMusic.setOnClickListener(e -> {
-            // Check if button is supposed to be "on"
-            // Change text and background to match
-            if (!music) {
-                music = true;
-                btnMusic.setBackgroundColor(Color.parseColor("#FF4CAF50"));
-                btnMusic.setText("On");
-                sounds.add("Music");
-
-
-            } else if (music) {
-                music = false;
-                btnMusic.setBackgroundColor(Color.RED);
-                btnMusic.setText("Off");
-                sounds.remove("Music");
-
-            }
-        });
-
-        // Each time a button is clicked they will be added of removed from the sounds array
-        btnSFX.setOnClickListener(e -> {
-            // Check if button is supposed to be "on"
-            // Change text and background to match
-            if (!sfx) {
-                sfx = true;
-                btnSFX.setBackgroundColor(Color.parseColor("#FF4CAF50"));
-                btnSFX.setText("On");
-                sounds.add("SFX");
-            } else if (sfx) {
-                sfx = false;
-                btnSFX.setBackgroundColor(Color.RED);
-                btnSFX.setText("Off");
-                sounds.remove("SFX");
-            }
-        });
+            // Make boolean sound from Game sounds true (sfx will work)
+            GameSounds.sound = true;
+            sfx = true;
+        } else {
+            sfx = false;
+            btnSFX.setText("Off");
+            btnSFX.setBackgroundColor(Color.parseColor("#F64C4C"));
+        }
 
         // Progress Bar implementation Logic for time per question
         sbTimePerQuest.setProgress(timePerQuestion);
@@ -189,22 +146,121 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        // Will send user to Main activity
-        btnCategoriesSP.setOnClickListener(e -> {
-            Intent i = new Intent(this, MainActivity.class);
-            resultLauncher.launch(i);
+        // Each time a button is clicked they will be added of removed from the sounds array
+        btnMusic.setOnClickListener(e -> {
+            // Check if button is supposed to be "on"
+            // Change text and background to match
+            if (!music) {
+                music = true;
+                btnMusic.setBackgroundColor(Color.parseColor("#FF4CAF50"));
+                btnMusic.setText("On");
+                sounds.add("Music");
 
-            GameSounds.clickSound(e.getContext());
+                // PLay music
+                GameSounds.music = true;
+                GameSounds.playMusic(this);
+            } else {
+                music = false;
+                btnMusic.setBackgroundColor(Color.parseColor("#F64C4C"));
+                btnMusic.setText("Off");
+
+                // Pause music
+                sounds.remove("Music");
+                GameSounds.pauseMusic();
+            }
+
+            // Play sfx if sound is true
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
+            }
+        });
+
+        // Each time a button is clicked they will be added of removed from the sounds array
+        btnSFX.setOnClickListener(e -> {
+            // Check if button is supposed to be "on"
+            // Change text and background to match
+            if (!sfx) {
+                sfx = true;
+                btnSFX.setBackgroundColor(Color.parseColor("#FF4CAF50"));
+                btnSFX.setText("On");
+                sounds.add("SFX");
+
+                // Make sond true so that sfx works
+                GameSounds.sound = true;
+            } else {
+                sfx = false;
+                btnSFX.setBackgroundColor(Color.parseColor("#F64C4C"));
+                btnSFX.setText("Off");
+                sounds.remove("SFX");
+
+                // Make sound false so that sfx don't play
+                GameSounds.sound = false;
+            }
+
+            // If sound is true, play click sfx
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
+            }
+        });
+
+        // When this button is clicked, preferences will be saved
+        btnSave.setOnClickListener(e -> {
+            // Make sound type string to send through preferences
+            String sendSound = "";
+            for (int j = 0; j < sounds.size(); j++) {
+                sendSound += sounds.get(j) + ",";
+            }
+
+            // Will play the click sound of sound is true
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
+            }
+
+            // Edit the numQuestions, timePerQuestion, question type, and sounds in preferences
+            editor.putInt("numQuestions", Integer.parseInt(txtNumQuest.getText() + ""));
+            editor.putInt("timePerQuestion", Integer.parseInt(txtTimePerQuest.getText() + ""));
+            editor.putString("sounds", sendSound);
+            editor.apply();
+
+            // To check if things are saving correctly
+            Log.d(TAG, "numQuestions" + preferences.getInt("numQuestions", 1));
+            Log.d(TAG, "timePerQuestion" + preferences.getInt("timePerQuestion", 1));
+            Log.d(TAG, "sounds" + preferences.getString("sounds", "1"));
+
+            // Display message for user when things are saved correctly
+            Toast.makeText(this, "Changes saved successfully.", Toast.LENGTH_LONG).show();
+
         });
 
         // Will send user to Settings again if they wish to
         btnCancel.setOnClickListener(e -> {
-//            Intent i = new Intent(this, SettingsActivity.class);
-//            resultLauncher.launch(i);
+            // If sound id true, play click sfx
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
+            }
 
+            Intent i = new Intent(this, SettingsActivity.class);
 
-            this.finish();
-            GameSounds.clickSound(e.getContext());
+            // Display message for user when things are saved correctly
+            Toast.makeText(this, "Changes Deleted.", Toast.LENGTH_LONG).show();
+            resultLauncher.launch(i);
+        });
+
+        // Implicit intent to instagram
+        ibInsta.setOnClickListener(e -> {
+            Uri uri = Uri.parse("https://www.instagram.com/pursuitquizzical");
+            Intent i = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(i);
+        });
+
+        // Will send user to Main activity
+        btnCategoriesSP.setOnClickListener(e -> {
+            // If sound is true, play click sfx
+            if (GameSounds.sound) {
+                GameSounds.clickSound(this);
+            }
+            Intent i = new Intent(this, MainActivity.class);
+            resultLauncher.launch(i);
         });
 
 
