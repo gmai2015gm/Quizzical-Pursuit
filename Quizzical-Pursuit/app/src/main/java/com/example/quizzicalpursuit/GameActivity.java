@@ -220,12 +220,12 @@ public class GameActivity extends AppCompatActivity {
             //If it's the right answer, turn it green; if not, turn it red.
             if (btn.getText().toString().equals(correctAnswer))
             {
-                btn.setBackgroundColor(Color.GREEN);
-                btn.setTextColor(Color.BLACK);
+                btn.setBackgroundColor(Color.parseColor("#FF4CAF50"));
+                btn.setTextColor(Color.WHITE);
             }
             else
             {
-                btn.setBackgroundColor(Color.RED);
+                btn.setBackgroundColor(Color.parseColor("#F64C4C"));
                 btn.setTextColor(Color.WHITE);
             }
         }
