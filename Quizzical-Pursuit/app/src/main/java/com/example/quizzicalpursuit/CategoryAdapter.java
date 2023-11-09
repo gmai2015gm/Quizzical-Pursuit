@@ -23,6 +23,7 @@ import java.util.*;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
+    //initialize arraylist, context, pos - used to get the current int ID from the website end, and sharedpreferences.
     ArrayList<Category> category;
     ArrayList<Integer> faveList;
     Context context;
@@ -33,7 +34,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public CategoryAdapter(Context context,ArrayList<Category> category) {
         this.category = category;
         this.context = context;
+
+        //initialize arraylist of favorites.
         faveList = new ArrayList<>();
+        //apply values for sharedpreferences.
         sp = context.getSharedPreferences("FAVES", Context.MODE_PRIVATE);
     }
 
@@ -54,11 +58,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, @SuppressLint("RecyclerView") int position) {
 //        pos = position;
+
+        //get category position and set text name
         Category c = category.get(position);
         holder.txtName.setText(""+c.name);
 
         getFavorites();
 
+        //apply favorite image resources.
         if(faveList.contains(category.get(position).getId()))
             holder.btnFav.setImageResource(R.drawable.h1);
         else
@@ -115,6 +122,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
 
     class CategoryViewHolder extends RecyclerView.ViewHolder{
+
+        //initialize name, button for favorites, and button for selecting items.
         TextView txtName;
         Button btnSelect;
         ImageButton btnFav;
@@ -154,28 +163,40 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 GameSounds.startSound(e.getContext());
             });
 
+            //on btnFav.click
             btnFav.setOnClickListener(e->{
+
+                //check if the item is already in the favelist and add
                 if(!faveList.contains(category.get(getAdapterPosition()).getId())){
                     faveList.add(category.get(getAdapterPosition()).getId());
                     //btnFav.setImageResource(R.drawable.h1);
+
+                    //else remove from favelist.
                 }else{
 
                     faveList.remove(faveList.indexOf(category.get(getAdapterPosition()).getId()));
                     btnFav.setImageResource(R.drawable.h2);
                 }
 
+                //apply button picture for items in the favelist.
                 if(faveList.contains(category.get(getAdapterPosition()).getId())){
                     btnFav.setImageResource(R.drawable.h1);
                 }
 
+                //create sharedpreference editor.
                 SharedPreferences.Editor ed = sp.edit();
+
+                //initialize favorite items holder
                 String fav = "";
+                //loop and apply values for the favelist. space delimited.
                 for(int j = 0;j<faveList.size();j++){
                     fav += faveList.get(j).toString() + " ";
                 }
                 // ReSort categories whenever new favorite is added
                 sortCategories();
                 notifyDataSetChanged();
+
+                //place fav in sharedpreferences. apply.
                 ed.putString("fa",fav);
                 ed.apply();
 
