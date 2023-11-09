@@ -33,12 +33,21 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public CategoryAdapter(Context context,ArrayList<Category> category) {
         this.category = category;
         this.context = context;
+        faveList = new ArrayList<>();
+        sp = context.getSharedPreferences("FAVES", Context.MODE_PRIVATE);
     }
 
     @NonNull
     @Override
     public CategoryAdapter.CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(context).inflate(R.layout.category_layout,parent,false);
+
+        // Populate Favorites List
+        getFavorites();
+
+        // Sort Categories for intial list population
+        sortCategories();
+
         return new CategoryViewHolder(v);
     }
 
@@ -48,18 +57,29 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         Category c = category.get(position);
         holder.txtName.setText(""+c.name);
 
+        getFavorites();
 
+        if(faveList.contains(category.get(position).getId()))
+            holder.btnFav.setImageResource(R.drawable.h1);
+        else
+            holder.btnFav.setImageResource(R.drawable.h2);
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return category.size();
+    }
+
+    /**
+     * Populate stored favorites list from SharedPreferences
+     */
+    private void getFavorites() {
         try{
             String keeper = sp.getString("fa"," ");
             String holderArray[] = keeper.split(" ");
             for(int k = 0;k<holderArray.length;k++){
                 faveList.add(Integer.parseInt(holderArray[k]));
-            }
-
-            if(faveList.contains(category.get(position).getId())){
-                holder.btnFav.setImageResource(R.drawable.h1);
-            }else{
-                holder.btnFav.setImageResource(R.drawable.h2);
             }
 
             HashSet<Integer> set = new HashSet<>();
@@ -79,9 +99,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return category.size();
+    /**
+     * Sort Categories list with favorites on top.
+     * Secondary sorting performed w/ category ID
+     */
+    private void sortCategories() {
+        category.sort((c1, t1) -> {
+            if(faveList.contains(c1.getId()) && !faveList.contains(t1.getId()))
+                return -1;
+            else if(!faveList.contains(c1.getId()) && faveList.contains(t1.getId()))
+                return 1;
+            return c1.getId() - t1.getId();
+        });
     }
 
 
@@ -96,10 +125,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             txtName = view.findViewById(R.id.txtName);
             btnSelect = view.findViewById(R.id.btnSelect);
             btnFav = view.findViewById(R.id.btnFav);
-            faveList = new ArrayList<>();
+//            faveList = new ArrayList<>();
 
 
-            sp = view.getContext().getSharedPreferences("FAVES", Context.MODE_PRIVATE);
+//            sp = view.getContext().getSharedPreferences("FAVES", Context.MODE_PRIVATE);
 
             btnSelect.setBackgroundColor(Color.parseColor("#FF4CAF50"));
 
@@ -144,14 +173,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 for(int j = 0;j<faveList.size();j++){
                     fav += faveList.get(j).toString() + " ";
                 }
-
-                //category.sort(Comparator.comparing(faveList -> faveList.getId()));
-                //notifyDataSetChanged();
+                // ReSort categories whenever new favorite is added
+                sortCategories();
+                notifyDataSetChanged();
                 ed.putString("fa",fav);
                 ed.apply();
 
-                Log.d("HESH",category.get(getAdapterPosition()).getId()+" "+ faveList.toString());
-
+//                Log.d("HESH",category.get(getAdapterPosition()).getId()+" "+ faveList.toString());
             });
 
         }
