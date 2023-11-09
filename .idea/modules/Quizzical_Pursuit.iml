@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="Quizzical Pursuit" external.linked.project.path="$MODULE_DIR$/../../Quizzical-Pursuit" external.root.project.path="$MODULE_DIR$/../../Quizzical-Pursuit" external.system.id="GRADLE" external.system.module.group="" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../Quizzical-Pursuit">
+      <excludeFolder url="file://$MODULE_DIR$/../../Quizzical-Pursuit/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../Quizzical-Pursuit/build" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
