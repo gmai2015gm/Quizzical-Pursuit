@@ -11,7 +11,7 @@ public class GameSounds {
     static int msec = 0;
     public static void playMusic(Context c)
     {
-        //Make sure that we want music, and music does not already exist
+        //Make sure that we want music and music does not already exist and start the music
         if (music && (musicPlayer == null || !musicPlayer.isPlaying()))
         {
             musicPlayer = MediaPlayer.create(c, R.raw.lofi_loops);
@@ -23,17 +23,18 @@ public class GameSounds {
     }
     public static void stopMusic()
     {
-        //Make sure it's playing and it exists
+        //Make sure it's playing and it exists, then stop it.
         if (musicPlayer != null && musicPlayer.isPlaying())
         {
             musicPlayer.stop();
+            msec = 0;
         }
 
     }
 
     public static void pauseMusic()
     {
-        //Make sure it's playing and it exists
+        //Make sure it's playing and it exists, then pause it
         if (musicPlayer != null && musicPlayer.isPlaying())
             musicPlayer.pause();
 
@@ -47,30 +48,29 @@ public class GameSounds {
             fxPlayer.setVolume(10000, 10000);
             fxPlayer.start();
 
+            //We need to release the player otherwise the sound will stop
             fxPlayer.setOnCompletionListener(mediaPlayer -> {
                 fxPlayer.release();
             });
         }
     }
+
+    /**------These are just call the make a sound method with the appropriate file------**/
     public static void clickSound(Context c)
     {
         makeASound(c, R.raw.click);
-
     }
     public static void correctSound(Context c)
     {
         makeASound(c, R.raw.correct);
-
     }
     public static void wrongSound(Context c)
     {
         makeASound(c, R.raw.mistakemod);
-
     }
     public static void endSound(Context c)
     {
         makeASound(c, R.raw.complete);
-
     }
     public static void vineBoom(Context c)
     {
@@ -80,6 +80,8 @@ public class GameSounds {
     {
         makeASound(c, R.raw.newgame);
     }
+
+    //Stores the current progress of the music player when called
     public static void storeProgress() {
         if(musicPlayer != null && musicPlayer.isPlaying())
             msec = musicPlayer.getCurrentPosition();

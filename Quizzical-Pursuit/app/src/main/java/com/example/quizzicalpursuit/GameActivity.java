@@ -40,8 +40,6 @@ public class GameActivity extends AppCompatActivity {
     /**------Our settings------**/
     int numOfQuestions; //The number of questions in the game
     int timeLimitPerQuestion; //The time in seconds that is given per question
-    boolean backgroundMusic; //does the user want backgroundMusic
-    boolean sfx; //Does the user want sound fx
     int categoryID;
     String categoryName;
 
@@ -122,11 +120,6 @@ public class GameActivity extends AppCompatActivity {
         numOfQuestions = triviaSettings.getInt("numQuestions", 10);
         timeLimitPerQuestion = triviaSettings.getInt("timePerQuestion", 30);
 
-        //TODO - do we need this bit of code? I think NOT. Welll...maybe
-        String sounds = triviaSettings.getString("sounds", "music, sfx");
-        backgroundMusic = sounds.toLowerCase().contains("music");
-        sfx = sounds.toLowerCase().contains("sfx");
-
         //Grab our category from the intent
         Bundle bundle = intent.getExtras();
         categoryName = bundle.getString("CAT");
@@ -140,7 +133,7 @@ public class GameActivity extends AppCompatActivity {
     {
         if (questions != null && !questions.isEmpty())
         {
-
+            //Grab our question and answers
             Question question = questions.get(questionNum);
             String questionText = question.getQuestion();
             String correctAnswer = question.getCorrectAnswer();
@@ -149,19 +142,24 @@ public class GameActivity extends AppCompatActivity {
             incorrectAnswers.add(question.getIncorrectAnswer2());
             incorrectAnswers.add(question.getIncorrectAnswer3());
 
+            //Update our counter
             tvProgress.setText((questionNum+1) + "/" + numOfQuestions);
 
+            //Shuffle the answers
             List<String> answerOptions = new ArrayList<>();
             answerOptions.add(correctAnswer);
             answerOptions.addAll(incorrectAnswers);
             Collections.shuffle(answerOptions);
 
+            //Show off our question
             tvQuestion.setText(questionText);
 
             btnAnswer1.setText(answerOptions.get(0));
             btnAnswer2.setText(answerOptions.get(1));
             btnAnswer3.setText(answerOptions.get(2));
             btnAnswer4.setText(answerOptions.get(3));
+
+            //Make our listeners
 
             btnAnswer1.setOnClickListener(e -> {
                 GameSounds.clickSound(e.getContext());
@@ -194,12 +192,13 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public void onTick(long l)
                 {
-                    pbarCountdown.setProgress(pbarCountdown.getProgress() + 1);
+                    pbarCountdown.setProgress(pbarCountdown.getProgress() + 1); //Increment the progress bar
                 }
 
                 @Override
                 public void onFinish()
                 {
+                    //Check the answer on time out
                     checkAnswer("", correctAnswer, true);
                 }
             }.start();
@@ -233,6 +232,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void resetBtnColor()
     {
+        //Set everything back to it's original look and color
         btnAnswer1.setBackgroundColor(Color.parseColor("#7503A9F4"));
         btnAnswer2.setBackgroundColor(Color.parseColor("#7503A9F4"));
         btnAnswer3.setBackgroundColor(Color.parseColor("#7503A9F4"));
@@ -275,6 +275,7 @@ public class GameActivity extends AppCompatActivity {
         toSummary.putExtra("incorrect", (numOfQuestions - correctAnswerCount)+"");
         toSummary.putExtra("time", avgSecTime+" sec");
 
+        //Leave this activity for the summary page and tie up loose ends
         startActivity(toSummary);
         timer.cancel();
         GameSounds.endSound(this);
