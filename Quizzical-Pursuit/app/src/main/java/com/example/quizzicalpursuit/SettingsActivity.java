@@ -30,13 +30,17 @@ public class SettingsActivity extends AppCompatActivity {
     Button btnMusic, btnSFX, btnSettingsSP, btnCategoriesSP, btnSave, btnCancel;
     ImageButton ibInsta;
     String TAG = "SETTINGS";
+
+    // This array list will hold the strings "Music" and "SFX" which will be sent through preferences
+    // When user clicks music and sfx button on/off it will be added/removed from list
     ArrayList<String> sounds;
 
-    // Variables to hold the number of questions and the time per question
+    // Variables to hold the number of questions and the time per question that user sets with seek bar
     int numQuestions;
     int timePerQuestion;
 
-    // Boolean for if sound (music and sfx) is on or not
+    // Boolean for if sound (music and sfx) is on or not. Will turned true or false based on button user clicks
+    // Used to check which background color and text button has as well as if sound is on
     boolean music = false;
     boolean sfx = false;
 
@@ -156,7 +160,7 @@ public class SettingsActivity extends AppCompatActivity {
                 btnMusic.setText("On");
                 sounds.add("Music");
 
-                // PLay music
+                // Play music
                 GameSounds.music = true;
                 GameSounds.playMusic(this);
             } else {
@@ -185,7 +189,7 @@ public class SettingsActivity extends AppCompatActivity {
                 btnSFX.setText("On");
                 sounds.add("SFX");
 
-                // Make sond true so that sfx works
+                // Make sound true so that sfx works
                 GameSounds.sound = true;
             } else {
                 sfx = false;
@@ -222,17 +226,13 @@ public class SettingsActivity extends AppCompatActivity {
             editor.putString("sounds", sendSound);
             editor.apply();
 
-            // To check if things are saving correctly
-            Log.d(TAG, "numQuestions" + preferences.getInt("numQuestions", 1));
-            Log.d(TAG, "timePerQuestion" + preferences.getInt("timePerQuestion", 1));
-            Log.d(TAG, "sounds" + preferences.getString("sounds", "1"));
-
             // Display message for user when things are saved correctly
             Toast.makeText(this, "Changes saved successfully.", Toast.LENGTH_LONG).show();
 
         });
 
-        // Will send user to Settings again if they wish to
+        // Will send user to Settings again
+        // If user has not saved the settings, they will be reset when cancel button is clicked
         btnCancel.setOnClickListener(e -> {
             // If sound id true, play click sfx
             if (GameSounds.sound) {
@@ -246,14 +246,14 @@ public class SettingsActivity extends AppCompatActivity {
             resultLauncher.launch(i);
         });
 
-        // Implicit intent to instagram
+        // Implicit intent to instagram page for Quizzical pursuit
         ibInsta.setOnClickListener(e -> {
             Uri uri = Uri.parse("https://www.instagram.com/pursuitquizzical");
             Intent i = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(i);
         });
 
-        // Will send user to Main activity
+        // Will send user to Main activity that shows categories
         btnCategoriesSP.setOnClickListener(e -> {
             // If sound is true, play click sfx
             if (GameSounds.sound) {
@@ -268,17 +268,6 @@ public class SettingsActivity extends AppCompatActivity {
         resultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             Log.d("Main_Activity", "Activity was finished.");
             Log.d("Main_Activity", result.getResultCode() + "");
-            switch (result.getResultCode()) {
-                case 0:
-                    Log.d("Main_Activity", "Back Button was pressed");
-                    break;
-                case 222:
-                    Log.d("Main_Activity", "Useractivity finished");
-                    break;
-                case 333:
-                    Log.d("Main_Activity", "Signup activity finished. Returned " + result.getData().getStringExtra("name"));
-                    break;
-            }
         });
     }
 }
